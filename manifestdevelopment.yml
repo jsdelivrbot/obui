@@ -1,0 +1,21 @@
+---
+applications:
+  - name: ob-predix-ui
+    memory: 64M
+    buildpack: nodejs_buildpack
+    command: node server/app.js
+    path: dist
+#services:
+ # - <your-name>-secure-uaa-instance
+ # - <your-name>-timeseries-instance
+ # - <your-name>-asset-instance
+env:
+    node_env: cloud
+    uaa_service_label : predix-uaa
+    #clientId: dashboardClient
+    #base64ClientCredential: ZGFzaGJvYXJkQ2xpZW50OmRhc2hib2FyZA== 
+    #UAA_SERVER_URL: https://fcb2ac21-d2fe-4d19-8461-f7932d47374f.predix-uaa.run.aws-jp01-pr.ice.predix.io
+    # Add these values for authentication in the cloud
+    #clientId: {Enter client ID, e.g. app-client-id, and place it here}
+    #base64ClientCredential: dWFhLWNsaWVudC1pZDp1YWEtY2xpZW50LWlkLXNlY3JldA==
+    #windServiceURL: "{URL of the microservice <your-name>-winddata-timeseries-service}, e.g.  https://your-name-winddata-timeseries-service.run.asw-usw02-pr.predix.io"

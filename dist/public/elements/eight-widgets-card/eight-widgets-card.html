@@ -1,0 +1,474 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<!-- six-up card element import -->
+<link rel="import"
+	href="../../bower_components/px-widget-cards/px-fourup-horizontal.html">
+
+<!-- simple chart element imports -->
+
+
+<link rel="import" href="eight-widgets-card-styles.html">
+<style>
+.left_div {
+	float: left;
+	border: 1px solid;
+	height: 150px;
+	width: 20%;
+	border: 1px solid;
+}
+
+.dev_no {
+	height: 50%;
+	width: 100%;
+}
+.dev_status{
+margin:auto;
+font-size: 2rem;
+text-align:center;
+border:none;
+border-top: 1px solid black;	
+height:100%;
+width:100%;
+}
+.dev_no p {
+	text-align: center;
+	padding: 0;
+	font-size: larger;
+	margin: auto;
+	padding-top: 40px;
+}
+
+.op_st {
+	height: 50%;
+	width: 100%;
+}
+
+.right_div {
+	height: 150px;
+	width: 78%;
+	float: left;
+	margin: auto;
+}
+
+.dev_st {
+	
+}
+
+.float_row {
+	float: left;
+	padding: 4px;
+	border: solid 1px black;
+}
+
+.label {
+	border: none;
+	font-color: black;
+	
+}
+
+.col1 {
+	width: 30%;
+	height: 20%;
+	text-align: right;
+	font-size: 15px;
+}
+
+.col2 {
+	width: 40%;
+	height: 20%;
+	text-align: right;
+	font-size: 15px;
+}
+
+.col3 {
+	width: 20%;
+	height: 20%;
+	text-align: left;
+	font-size: 15px;
+}
+</style>
+
+
+<dom-module id="eight-widgets-card"> <template>
+<px-card style="padding-bottom:0;">
+<style include="eight-widgets-card-styles"></style>
+<px-fourup id="widgetsx4-1">
+<div class="widget-1" id="dev1_tag" on-click="detail1">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#1</p>
+		</div>
+		<div class="op_st" >
+		<input type="text" id="dev1_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev1_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev1_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev1_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev1_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev1_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+</div>
+<div class="widget-2" id="dev2_tag" on-click="detail2">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#2</p>
+		</div>
+		<div class="op_st">
+		<input type="text" class="dev_status" sid="dev2_st" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev2_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev2_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev2_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev2_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev2_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+
+
+</div>
+<div class="widget-3" id="dev3_tag" on-click="detail3">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#3</p>
+		</div>
+		<div class="op_st" id="dev3_st">
+			<input type="text" id="dev1_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev3_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev3_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev3_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev3_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev3_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+
+</div>
+<div class="widget-4" id="dev4_tag" on-click="detail4">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#4</p>
+		</div>
+		<div class="op_st" id="dev4_st">
+			<input type="text" id="dev4_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev4_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev4_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev4_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev4_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev4_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+
+</div>
+</px-fourup> <px-fourup id="widgetsx4-2">
+<div class="widget-1" id="dev5_tag" on-click="detail5">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#5</p>
+		</div>
+		<div class="op_st" id="dev5_st">
+			<input type="text" id="dev5_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev5_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev5_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev5_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev5_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev5_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+</div>
+<div class="widget-2" id="dev6_tag" on-click="detail6">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#6</p>
+		</div>
+		<div class="op_st" id="dev6_st">
+			<input type="text" id="dev6_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev6_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev6_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev6_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev6_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev6_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+</div>
+<div class="widget-3" id="dev8_tag" on-click="detail8">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#8</p>
+		</div>
+		<div class="op_st" id="dev8_st">
+		<input type="text" id="dev8_st" class="dev_status" value="-" ></div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev8_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev8_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev8_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev8_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev8_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+</div>
+<div class="widget-4" id="dev9_tag" on-click="detail9">
+	<div class="left_div">
+		<div class="dev_no">
+			<p>#9</p>
+		</div>
+		<div class="op_st" id="dev9_st">
+		<input type="text" id="dev9_st" class="dev_status" value="-" >
+		</div>
+	</div>
+	<div class="right_div">
+		<div class="float_row">
+			<input class="label col1" type="text" value="운전시간" readOnly /> <input
+				class="label col2" id="dev9_t1" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="Hr" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="전력" readOnly /> <input
+				class="label col2" id="dev9_t2" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kW" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev9_t3" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="In" readOnly /> <input
+				class="label col2" id="dev9_t4" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="℃" readOnly />
+		</div>
+		<div class="float_row">
+			<input class="label col1" type="text" value="Out" readOnly /> <input
+				class="label col2" id="dev9_t5" type="text" value="-" readOnly /> <input
+				class="label col3" type="text" value="kg/㎠" readOnly />
+		</div>
+	</div>
+</div>
+</px-fourup> <iron-ajax auto id="deviceIronAjax" url="/api/predix-asset/root/root"
+	last-response="{{_deviceData}}"> </iron-ajax> 
+	
+	</px-card>
+	</template> <script>
+	Polymer({
+		is : 'eight-widgets-card',
+		properties:{
+			 _response: {
+		          type: Array,
+		          	computed:'_computeDeviceResponse(_deviceData)'
+		        },
+			_prev_response:{
+				type:Object
+			}	
+		},
+		_computeDeviceResponse:function(){
+			if(this._prev_response == null){
+				this._prev_response = this._deviceData
+			}else if(this._prev_response != this._deviceData){
+				data = this._deviceData.data;
+				for(var i = 0; i < data.length;i++){
+					var status = document.getElementById("dev"+data[i].id+"_st");
+					if(data[i].status == "on"){
+						status.value = "ON"
+						status.style.color="green";	
+					}else{
+						status.value="OFF"
+						status.style.color ="red";
+					}
+					
+				}
+			}
+		},
+		detail1 : function(e, detail){
+			var _this = this;
+			console.log("clicked");
+			_this.updateDeck([{"dev_id":"1"}]);	
+		},
+		detail2 : function(e, detail){
+			
+		},
+		detail3 : function(e, detail){
+			
+		},
+		detail4 : function(e, detail){
+			
+		},
+		detail5 : function(e, detail){
+			
+		},
+		detail6 : function(e, detail){
+			
+		},
+		detail8 : function(e, detail){
+			
+		},
+		detail9 : function(e, detail){
+			
+		},
+
+		init:function(){
+			
+		},
+		ready:function(){
+			var _this = this;
+			_this.$.deviceIronAjax.generateRequest();
+			setInterval(function(){
+				_this.$.deviceIronAjax.generateRequest();
+			},10000);
+		},
+		deckStateChanged: function(newState, oldState) {
+			console.log("changed");
+		  },
+		behaviors:[px.card]
+		
+	});
+</script> </dom-module>

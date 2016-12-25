@@ -1,0 +1,16 @@
+{
+  "id": "root",
+  "data": [
+    {"id":1,"status":"on","hour":1,"watt":493,"in1":2.1,"in2":-500.0,"out":7.9},
+    {"id":2,"status":"off","hour":10,"watt":493,"in1":2.1,"in2":-500.0,"out":7.9},
+    {"id":3,"status":"off","hour":14,"watt":493,"in1":2.1,"in2":-500.0,"out":7.9},
+    {"id":4,"status":"off","hour":11,"watt":493,"in1":2.1,"in2":-500.0,"out":7.9},
+    {"id":5,"status":"on","hour":1,"watt":493,"in1":2.1,"in2":-500.0,"out":7.9},
+	{"id":6,"status":"off","hour":2,"watt":494,"in1":2.1,"in2":-19.0,"out":7.9},
+	{"id":8,"status":"on","hour":3,"watt":495,"in1":2.1,"in2":-6.0,"out":7.9},
+	{"id":9,"status":"on","hour":4,"watt":496,"in1":2.1,"in2":-6.0,"out":7.9}
+  	],
+  "meta": {
+    "parentId": null
+  }
+}

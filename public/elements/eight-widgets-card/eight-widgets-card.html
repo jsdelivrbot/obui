@@ -100,7 +100,7 @@ width:100%;
 			<p>#1</p>
 		</div>
 		<div class="op_st" >
-		<input type="text" id="dev1_st" class="dev_status" value="OFF" >
+		<input type="text" id="dev1_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -131,14 +131,13 @@ width:100%;
 		</div>
 	</div>
 </div>
-<div class="widget-2" id="dev2_tag" on-click="detail2"
-	style="border-right-width: 1px; border-right-style: solid; margin-right: 20px; padding-right: 20px;"">
+<div class="widget-2" id="dev2_tag" on-click="detail2">
 	<div class="left_div">
 		<div class="dev_no">
 			<p>#2</p>
 		</div>
 		<div class="op_st">
-		<input type="text" class="dev_status" sid="dev2_st" value="ON" >
+		<input type="text" class="dev_status" sid="dev2_st" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -177,7 +176,7 @@ width:100%;
 			<p>#3</p>
 		</div>
 		<div class="op_st" id="dev3_st">
-			<input type="text" id="dev1_st" class="dev_status" value="ON" >
+			<input type="text" id="dev1_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -215,7 +214,7 @@ width:100%;
 			<p>#4</p>
 		</div>
 		<div class="op_st" id="dev4_st">
-			<input type="text" id="dev4_st" class="dev_status" value="ON" >
+			<input type="text" id="dev4_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -254,7 +253,7 @@ width:100%;
 			<p>#5</p>
 		</div>
 		<div class="op_st" id="dev5_st">
-			<input type="text" id="dev5_st" class="dev_status" value="ON" >
+			<input type="text" id="dev5_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -285,14 +284,13 @@ width:100%;
 		</div>
 	</div>
 </div>
-<div class="widget-2" id="dev6_tag" on-click="detail6"
-	style="border-right-width: 1px; border-right-style: solid; margin-right: 20px; padding-right: 20px;">
+<div class="widget-2" id="dev6_tag" on-click="detail6">
 	<div class="left_div">
 		<div class="dev_no">
 			<p>#6</p>
 		</div>
 		<div class="op_st" id="dev6_st">
-			<input type="text" id="dev6_st" class="dev_status" value="ON" >
+			<input type="text" id="dev6_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -329,7 +327,7 @@ width:100%;
 			<p>#8</p>
 		</div>
 		<div class="op_st" id="dev8_st">
-		<input type="text" id="dev8_st" class="dev_status" value="ON" ></div>
+		<input type="text" id="dev8_st" class="dev_status" value="-" ></div>
 	</div>
 	<div class="right_div">
 		<div class="float_row">
@@ -365,7 +363,7 @@ width:100%;
 			<p>#9</p>
 		</div>
 		<div class="op_st" id="dev9_st">
-		<input type="text" id="dev9_st" class="dev_status" value="ON" >
+		<input type="text" id="dev9_st" class="dev_status" value="-" >
 		</div>
 	</div>
 	<div class="right_div">
@@ -417,10 +415,8 @@ width:100%;
 				this._prev_response = this._deviceData
 			}else if(this._prev_response != this._deviceData){
 				data = this._deviceData.data;
-				/* console.log("data",data); */
 				for(var i = 0; i < data.length;i++){
 					var status = document.getElementById("dev"+data[i].id+"_st");
-				 	console.log("status",status);
 					if(data[i].status == "on"){
 						status.value = "ON"
 						status.style.color="green";	
@@ -430,13 +426,11 @@ width:100%;
 					}
 					
 				}
-				/* console.log(data); */
 			}
 		},
 		detail1 : function(e, detail){
-			var _this = this;
-			console.log("clicked");
-			_this.updateDeck([{"dev_id":"1"}]);	
+			//console.log("clicked",this.updateDeck([{"dev_id":"1"}]));
+			this.updateDeck([{"dev_id":"1"}]);	
 		},
 		detail2 : function(e, detail){
 			
@@ -464,10 +458,12 @@ width:100%;
 			
 		},
 		ready:function(){
+			this.updateDeck();
 			var _this = this;
+			_this.$.deviceIronAjax.generateRequest();
 			setInterval(function(){
 				_this.$.deviceIronAjax.generateRequest();
-			},10000);
+			},1000);
 		},
 		deckStateChanged: function(newState, oldState) {
 			console.log("changed");
