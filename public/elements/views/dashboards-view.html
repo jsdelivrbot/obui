@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../eight-widgets-card/eight-widgets-card.html">
+<link rel="import" href="../op-time-card/op-time-card.html">
+<link rel="import" href="../detail-info-card/detail-info-card.html">
+
+
+<!-- local px-deck -->
+<link rel="import" href="../../elements/px-deck/px-deck-index.html">
+
+<dom-module id="dashboards-view">
+  <template>
+
+    <script type="text/javascript" src="../../bower_components/es6-promise/es6-promise.min.js"></script>
+
+<
+  </template>
+  <script>
+    Polymer({
+
+      is: 'dashboards-view',
+
+      properties: {
+        _decks: {
+          type: Array,
+          computed: '_computeDecks(_decksResponse)'
+        },
+        _initialBrowserContext: {
+          type: Object,
+          computed: '_computeInitialBrowserContext(_browserContext)'
+        },
+        _nodeUri: {
+          type: String
+        },
+        _decksUrl: {
+          type: String,
+          computed: '_computeDecksUrl(_selectedContextTag, viewServiceBaseUrl)'
+        },
+        _selectedContextTag: {
+          type: String,
+          value: ''
+        },
+        viewServiceBaseUrl: {
+          type: String,
+          value: '/api/view-service/'
+        },
+        _selectedDeckId: {
+          type: String,
+          computed: '_computeSelectedDeckId(_selectedDeck)'
+        }
+      },
+
+      _computeDecksUrl: function() {
+        if(this._selectedContextTag) {
+        	console.log(this.viewServiceBaseUrl + "decks?tag=" + this._selectedContextTag);
+          return this.viewServiceBaseUrl + "decks?tag=" + this._selectedContextTag;
+        } else {
+          return this.viewServiceBaseUrl + "decks";
+        }
+      },
+
+      _computeSelectedDeckId: function() {
+        if(this._selectedDeck) {
+          //return this._selectedDeck.id;
+        	return 1;
+        }
+      },
+
+      ready: function ready() {
+
+        this.$.decksIronAjax.generateRequest();
+      },
+
+      _computeDecks: function() {
+        var decks = [];
+        if (this._decksResponse && this._decksResponse.length > 0) {
+          this._decksResponse.forEach(function(deck) {
+            decks.push({ name: deck.title, id: deck.id });
+          });
+        };
+        return decks;
+      },
+    
+    });
+  </script>
+</dom-module>

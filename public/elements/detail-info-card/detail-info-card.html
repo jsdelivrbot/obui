@@ -1,0 +1,71 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/px-simple-horizontal-bar-chart/px-simple-horizontal-bar-chart.html">
+<link rel="import" href="../../bower_components/px-simple-line-chart/px-simple-line-chart.html">
+<link rel="import" href="../../bower_components/px-simple-bar-chart/px-simple-bar-chart.html">
+
+
+<script src="../../bower_components/d3/d3.js"></script>
+
+<dom-module id="detail-info-card"> <template> <px-card
+	header-text="장비 상세"> <iron-ajax id="electIronAjax" url=""
+	last-response="{{_electUsageData}}"> </iron-ajax> <iron-ajax
+	id="pressureIronAjax" url="" last-response="{{_pressureData}}">
+</iron-ajax>
+<div style="float:left;height:100%;padding-top:10px;">
+		<input style="text-align:center;border: none; font-size: 1.7rem;" size="5" type="text" value="#1"
+			size="15" readOnly>
+</div>
+<div style="float:left;">
+<div style="">
+	<div style="float: left;">
+		<input style="padding-top:80px;text-align:center;border: none; font-size: 1.5rem;" size="10" type="text" value="전력"
+			size="15" readOnly>
+	</div>
+	<div id="eletricityGraph" style="width: 70%; float: left; height: 100px;">
+		<px-simple-bar-chart width="1100" height="100" chart-data='[[112,57,53,122,128,120,56,94,72,110,102,67,100,56,78,10,76,120,56,94,72,110,102,67,100,56,78,10,76,112,57]]' 
+		colors='["#FFAAA6","#FFAAA6","#FFD3B5","#FF8C94","#DCEDC2"]' 
+		legend-order="reverse"></px-simple-bar-chart>
+	</div>
+</div>
+<div style="clear: both;padding-top:60px;"">
+	<div style="float:left;">
+		<input size="10" style="border: none;padding-top:60px; font-size: 1.5rem;" ,type="text" value="응축 압력" size="15" readOnly>
+	</div>
+	<div id="pressPressureGraph" style="float:left;" >
+	<px-simple-line-chart  width="1100" min="0.5" max="3.0" columns="" rows="3" 
+	line-data='[[1397102460000,1.99],[1397139660000,1.92],[1397177400000,1.97],[1397228040000,1.12],[1397248260000,1.09],
+	[1397291280000,1],[1397318100000,1.99],[1397342100000,1.75],[1397390820000,1.11],[1397408100000,1.93],[1397458800000,1.84],
+	[1397522940000,1.99]]' threshold="1.8" min-label="min" max-label="max">
+	</px-simple-line-chart>
+	</div>
+</div>
+</div>
+</px-card> </template> <script>
+	Polymer({
+		is : 'detail-info-card',
+		properties : {
+			_computedElecUsage:{
+				type: Array,
+				computed : '_computedElect(_electUsageData)'
+			},
+			_computedPressPressure:{
+				type: Array,
+				computed : '_computedPressure(_)'
+			}
+		},
+		_computedElect :function(){},
+		_computedPressure :function(){},
+		
+		deckStateChanged: function(newState, oldState){
+			this.showCard();
+		},
+ready : function(){
+console.log("init");
+	
+			},
+		
+		behaviors : [px.card]
+	});
+</script> </dom-module>

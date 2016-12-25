@@ -1,0 +1,40 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/px-simple-horizontal-bar-chart/px-simple-horizontal-bar-chart.html">
+<link rel="import" href="../../bower_components/px-simple-line-chart/px-simple-line-chart.html">
+<link rel="import" href="../../bower_components/px-simple-bar-chart/px-simple-bar-chart.html">
+
+
+<script src="../../bower_components/d3/d3.js"></script>
+
+<dom-module id="av-monthly-cop-card"> <template> <px-card style="width:20%;float:left;"
+	header-text="월별 평균 C.O.P"> 
+	
+</px-card> </template> <script>
+	Polymer({
+		is : 'av-monthly-cop-card',
+		properties : {
+			_computedElecUsage:{
+				type: Array,
+				computed : '_computedElect(_electUsageData)'
+			},
+			_computedPressPressure:{
+				type: Array,
+				computed : '_computedPressure(_)'
+			}
+		},
+		_computedElect :function(){},
+		_computedPressure :function(){},
+		
+		deckStateChanged: function(newState, oldState){
+			this.showCard();
+		},
+ready : function(){
+console.log("init");
+	
+			},
+		
+		behaviors : [px.card]
+	});
+</script> </dom-module>
