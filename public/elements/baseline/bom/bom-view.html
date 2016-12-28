@@ -1,0 +1,36 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-card/px-deck.html">
+<dom-module id="bom-view"> <template> <px-deck
+	context="{{context}}"> <my-facility-bom-master-btn-card
+	id="unit-btn" title=""></my-facility-bom-master-btn-card>
+
+<div style="width: 100%">
+	<div
+		style="width: 39.6%; background-color: white; height: 1618px; overflow: auto; margin-right: 0.4%; float: left">
+		<my-facility-bom-master-tree-card id="unit_search"
+			title="설비 Master - Unit 트리맵"></my-facility-bom-master-tree-card>
+	</div>
+
+	<div style="width: 60%; float: left">
+		<div style="width: 100%; float: left">
+
+			<my-facility-bom-master-list-card id="unit_add" title="설비 Master 목록"></my-facility-bom-master-list-card>
+			<my-facility-bom-unit-baseinfo-card id="unit_all"
+				title="설비 Unit Type 목록"></my-facility-bom-unit-baseinfo-card>
+
+		</div>
+	</div>
+	<div style="clear: both"></div>
+</div>
+<div style="width: 100%;">
+	<my-facility-bom-unit-insert-card id="unit_insert" title="설비 Unit 추가"></my-facility-bom-unit-insert-card>
+</div>
+<div style="clear: both"></div>
+
+</px-deck> </template> <script>
+	Polymer({
+		is : 'bom-view',
+		properties : {},
+		behaviors : [ px.deck ]
+	});
+</script> </dom-module>

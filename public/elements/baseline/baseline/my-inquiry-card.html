@@ -1,0 +1,59 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../../bower_components/px-card/px-card.html"/>
+<link rel="import" href="../../../bower_components/px-data-table/px-data-table.html"/>
+
+<script src="../../../bower_components/moment/min/moment.min.js"></script>
+
+<dom-module id="my-inquiry-card">
+  <template>
+    <px-card header-text={{title}}>
+      <div class="card-header-links layout layout--right">
+        <px-data-table id="meterGrid" striped>
+      		<px-data-table-column name="번호" filterable sortable></px-data-table-column>
+      		<px-data-table-column name="메뉴" filterable sortable></px-data-table-column>
+        </px-data-table>
+      </div>
+    </px-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-inquiry-card',
+	properties: {
+		gridData: {
+			type: Array,
+			notify: true
+		}
+  },
+  ready: function() {
+    var self = this;
+    this.$.meterGrid.addEventListener("px-cell-click", function(e){
+      var clickedRow = e.detail.row, clickedColumn = e.detail.column;
+      var event = new Object();
+      event.clickedInfo = self.gridData[clickedRow.row.dataIndex].instance_key;
+      self.updateDeck(event);
+      // self.updateDeck({'clickedInfo': self.gridData[clickedRow.row.dataIndex].instance_key});
+    });
+    this.getGridData('/code/getList');
+  },
+  getGridData: function(uri) {
+    var self = this;
+    this.getData('/api/datagrid' + uri).then(function(data) {
+      var uiData = [];
+      self.gridData = data.tableData;
+      for(var i=0, count=1; i < data.tableData.length; i++, count++) {
+        var uiRow = {
+          번호: count,
+          메뉴: data.tableData[i].name
+        };
+        uiData.push(uiRow);
+      }
+      self.$.meterGrid.tableData = uiData;
+    });
+  },
+  deckStateChanged: function(newState, oldState) {
+  },
+  behaviors: [px.card]
+});
+</script>

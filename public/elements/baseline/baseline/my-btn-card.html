@@ -1,0 +1,61 @@
+<link rel="import" href="../../../bower_components/px-card/px-card.html"/>
+
+<script src="../../../bower_components/moment/min/moment.min.js"></script>
+
+<dom-module id="my-btn-card">
+<template>
+<!--<px-card header-text="BASIS INFORMATION">-->
+<px-card header-text={{title}}>
+ <div class="card-header-link layout layout--right">
+        <div class="layout__item u-1/6">
+        	<div class="row">
+      		<div class="form-group" style="margin-top:20px; text-align:right; padding-right:10px;">
+              <span>
+                <button class="btn btn-default" id="newSubmit" on-click="new_submitData">추가</button>
+					 <button class="btn btn-default" id="newCode" on-click="add_newData">저장</button>
+					 <button class="btn btn-default" id="deleteInform" on-click="deleteData">삭제</button>
+      		  </span>
+      		</div>
+        </div>
+      </div>
+ </div>
+</px-card>
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-btn-card',
+	properties: {
+		identifyUri: {
+			type: String
+		}
+	},
+	add_newData: function(){
+		var self = this;
+		var event = new Object();
+		event.command = 'new' + self.identifyUri;
+		self.updateDeck(event);
+		// self.updateDeck({'command': 'new' + self.identifyUri});
+	},
+	updateData: function(){
+		var self = this;
+		var event = new Object();
+		event.command = 'update' + self.identifyUri;
+		self.updateDeck(event);
+		// self.updateDeck({'command': 'update' + self.identifyUri});
+	},
+	deleteData: function(){
+		var self = this;
+		var event = new Object();
+		event.command = 'delete' + self.identifyUri;
+		self.updateDeck(event);
+		// self.updateDeck({'command': 'delete' + self.identifyUri});
+	},
+	deckStateChanged: function(newState, oldState) {
+		var self = this;
+		self.identifyUri = newState.clickedInfo;
+	},
+	behaviors: [px.card]
+});
+</script>

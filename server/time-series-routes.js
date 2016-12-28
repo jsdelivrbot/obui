@@ -8,6 +8,7 @@ var getRoutes = function() {
   var levels = ['core-vibe', 'datagrid', 'delta-egt', 'fan-vibration', 'simple-data', 'scatter'];
   var routes = {};
   _.each(levels, function(level) {
+    console.log(levels);
     routes[level] = getLevelData(level);
   });
   return routes;

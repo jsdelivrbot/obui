@@ -1,0 +1,104 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../px-data-table/px-data-table.html"/>
+
+<script src="../moment/min/moment.min.js"></script>
+
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap-theme.css" />
+
+
+<dom-module id="my-facility-bom-unit-baseinfo-card">
+  <template>
+    <px-card header-text={{title}}>
+      <div class="card-header-link layout layout--right">
+        <div class="row">
+          <div class="form-group">
+            <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>사업장</label>
+              <select class="form-control" id="add_site"><option value="default">전체</option></select>
+            </div>
+            <div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+              <span>
+              <button class="btn btn-default" id="inquiry" on-click="inquiryData">조회</button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:30px;">
+          <px-data-table id="facilityUnitBaseInfoGrid" striped table-rows></px-data-table>
+        </div>
+      </div>
+    </px-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'my-facility-bom-unit-baseinfo-card',
+  ready: function() {
+    var self = this;
+
+    var select_site = document.getElementById("add_site");
+    this.setSiteList(select_site, "site");
+
+    this.getFacilityUnitBaseInfoGridData('/facility_unit_type/', '[]');
+  },
+  inquiryData: function() {
+    var self = this;
+
+    var site_code = document.getElementById("add_site").value;
+    var parameters = [];
+    parameters.push(site_code);
+    var keys = [
+      "site_code"
+    ];
+    var data = this.makeParameter(parameters, keys);
+    self.getFacilityUnitBaseInfoGridData('/facility_unit_type/', data);
+  },
+  getFacilityUnitBaseInfoGridData: function(uri, parameter) {
+    var self = this;
+    px.dealer.httpRequest({
+      url: '/api/datagrid' + uri,
+      method: 'POST',
+      data: parameter
+    }).then(function(data){
+      var uiData = [];
+      data.tableData.forEach(function(row){
+        var uiRow = {};
+        data.columns.forEach(function(col){
+          uiRow[col.label] = row[col.field]; //key:value
+        });
+        uiData.push(uiRow);
+      });
+      self.$.facilityUnitBaseInfoGrid.tableData = uiData;
+    });
+  },
+  sendFacilityUnitBaseInfoGridData: function(parameters){
+    var self = this;
+    self.$.facilityUnitBaseInfoGrid.addEventListener("px-cell-click", function(e){
+      var clickedRow = e.detail.row;
+
+      var event = new Object();
+      event.gridCommand = "select_facility_unit_type";
+      event.site_code = clickedRow.row.사업장코드.value;
+      event.facility_unit_type_code = clickedRow.row.설비유닛타입코드.value;
+
+      parameters.site_code = clickedRow.row.사업장코드.value;
+      parameters.site_name = clickedRow.row.사업장이름.value;
+      parameters.facility_unit_type_code = clickedRow.row.설비유닛타입코드.value;
+      parameters.facility_unit_type_name = clickedRow.row.설비유닛타입이름.value;
+      
+      event.facility_info = parameters;
+
+      self.updateDeck(event);
+    });
+  },
+  deckStateChanged: function(newState, oldState) {
+    var self = this;
+    if(newState.facilityInfo != null){
+      var facilityInfo = newState.facilityInfo;
+      self.sendFacilityUnitBaseInfoGridData(facilityInfo);
+    }
+  },
+  behaviors: [px.card]
+});
+</script>

@@ -1,0 +1,198 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../px-dropdown/px-dropdown.html" />
+<link rel="import" href="../px-calendar-picker/px-calendar-picker.html" />
+<link rel="import" href="../px-datetime-picker/px-datetime-picker.html" />
+<script src="../moment/min/moment.min.js"></script>
+<dom-module id="my-meter-info-card">
+    <template>
+        <px-card header-text={{title}}>
+            <div class="card-header-links layout layout--right">
+                <div class="layout__item u-1/6">
+                    <div class="row">
+                        <div class="row">
+                            <div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+                                <span>
+                        <button class="btn btn-default" id="newCode" on-click="updateData">저장</button>
+                        </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <label for="exampleInputName2"><span style="color:red;">*</span>사업장</label>
+                                <select class="form-control" id="add_site">
+                                    <option value="default">선택</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="exampleInputName2">TAG ID</label>
+                                <input type="text" class="form-control" id="add_tag_id">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="exampleInputName2">계측기 코드</label>
+                                <input type="text" class="form-control" id="meter_code" disabled>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="exampleInputName2">계측기 명</label>
+                                <input type="text" class="form-control" id="meter_name">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="exampleInputName2">물리량 명</label>
+                                <select id="add_physics" class="form-control">
+                                    <option value="default">선택</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </px-card>
+    </template>
+</dom-module>
+<script>
+Polymer({
+    is: 'my-meter-info-card',
+    properties: {
+        arr_meter_code: {
+            type: Array,
+            notify: true
+        },
+        row_data: {
+            type: Array,
+            notify: true
+        }
+    },
+    init: function() {
+        this.hideCard();
+    },
+    ready: function() {
+        var self = this;
+        var select_site = document.getElementById("add_site");
+        this.setSiteList(select_site, "site");
+        var select_physics = document.getElementById("add_physics");
+        this.setUpperList("default", select_physics, "physics");
+
+        $('#add_site').change(function() {
+            var site_code = this.value;
+            var select_physics = document.getElementById("add_physics");
+            self.setUpperList(site_code, select_physics, "physics");
+        });
+    },
+    initAllInputForms: function() {
+        var self = this;
+        var input_tag_id = document.getElementById("add_tag_id");
+        var input_meter_code = document.getElementById("meter_code");
+        var input_meter_name = document.getElementById("meter_name");
+        var select_physics = document.getElementById("add_physics");
+
+        input_tag_id.value = "";
+        input_meter_code.value = "";
+        input_meter_name.value = "";
+
+        this.initList(select_physics);
+    },
+    updateData: function() {
+        var self = this;
+        var uri = (self.row_data == null ? "" : self.row_data.uri);
+        var site_code = document.getElementById("add_site").value;
+        if (this.convertDefaultToNull(site_code) == "") {
+            alert("사업장은 필수 입력입니다.");
+        } else {
+            var site_name = $("#add_site option:selected").text();
+            var meter_code = document.getElementById("meter_code").value;
+            var meter_name = document.getElementById("meter_name").value;
+            var tag_id = document.getElementById("add_tag_id").value;
+            var virtual = "";
+            var type = "";
+            var physics_code = this.convertDefaultToNull(document.getElementById("add_physics").value);
+            var physics_name = this.convertDefaultToNull($("#add_physics option:selected").text());
+            var energy_source_code = "";
+            var energy_source_name = "";
+            var load_type = "";
+            if (self.row_data != null) {
+                virtual = (this.convertDefaultToNull(self.row_data.virtual) == "" ? "" : self.row_data.virtual);
+                type = (this.convertDefaultToNull(self.row_data.type) == "" ? "" : self.row_data.type);
+                energy_source_code = (this.convertDefaultToNull(self.row_data.energy_source_code) == "" ? "" : self.row_data.energy_source_code);
+                energy_source_name = (this.convertDefaultToNull(self.row_data.energy_source_name) == "" ? "" : self.row_data.energy_source_name);
+                load_type = (this.convertDefaultToNull(self.row_data.load_type) == "" ? "" : self.row_data.load_type);
+            }
+
+            var parameters = {
+                "uri": uri,
+                "site_code": site_code,
+                "site_name": site_name,
+                "meter_code": meter_code,
+                "meter_name": meter_name,
+                "tag_id": tag_id,
+                "virtual": virtual,
+                "type": type,
+                "physics_code": physics_code,
+                "physics_name": physics_name,
+                "energy_source_code": energy_source_code,
+                "energy_source_name": energy_source_name,
+                "load_type": load_type
+            }
+            console.log(parameters);
+            this._httpRequest("/api/assetmng/meter", "PUT", parameters);
+            var event = new Object();
+            event.gridCommand = "inquiry";
+            event.parameters = [];
+            self.updateDeck(event);
+        }
+    },
+    delete_Data: function() {
+        var self = this;
+        if (self.arr_meter_code == null || self.arr_meter_code.length == 0) {
+            alert("삭제할 데이터를 선택하세요.");
+        } else {
+            var data = {
+                "delete_code_list": []
+            };
+            self.arr_meter_code.forEach(function(d) {
+                data.delete_code_list.push(d);
+            });
+            console.log(data);
+            // this._httpRequest("/api/assetmng/meter", "DELETE", data);
+        }
+    },
+    setInputForms: function(row_data) {
+        var self = this;
+        var select_site = document.getElementById("add_site");
+        var input_tag_id = document.getElementById("add_tag_id");
+        var input_meter_code = document.getElementById("meter_code");
+        var input_meter_name = document.getElementById("meter_name");
+        var select_physics = document.getElementById("add_physics");
+
+        self.initAllInputForms();
+
+        select_site.value = row_data.site_code;
+        input_tag_id.value = row_data.tag_id;
+        input_meter_code.value = row_data.meter_code;
+        input_meter_name.value = row_data.meter_name;
+
+        this.setUpperList(row_data.site_code, select_physics, "physics", row_data.physics_code);
+    },
+    deckStateChanged: function(newState, oldState) {
+        var self = this;
+        if (newState.command == 'new') {
+            self.showCard();
+        }
+        if (newState.gridCommand == "select_row" || newState.gridCommand == "select_all_rows") {
+            self.arr_meter_code = [];
+            newState.arr_meter_code.forEach(function(d) {
+                self.arr_meter_code.push(d);
+            });
+            if (newState.gridCommand == "select_row") {
+                self.row_data = newState.row_data;
+                if (newState.row_data != null) {
+                    self.setInputForms(self.row_data);
+                }
+            }
+        }
+        if (newState.command == 'delete') {
+            self.delete_Data();
+        }
+    },
+    behaviors: [px.card]
+});
+</script>

@@ -1,0 +1,35 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../px-card/px-card.html"/>
+
+<script src="../moment/min/moment.min.js"></script>
+
+<dom-module id="my-facility-bom-master-btn-card">
+  <template>
+    <px-card header-text={{title}}>
+      <div class="card-header-link layout layout--right">
+        <div class="layout__item u-1/6">
+        	<div class="row">
+      		<div class="form-group" style="margin-top:15px; text-align:right;">
+              <span>
+                <button class="btn btn-default" id="delete" on-click="deleteData" disabled>삭제</button>
+      		  </span>
+      		</div>
+        </div>
+      </div>
+     </div>
+    </px-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'my-facility-bom-master-btn-card',
+  properties: {
+  },
+  deleteData: function(){
+    var self = this;
+    self.updateDeck({'command': 'delete'});
+  },
+  behaviors: [px.card]
+});
+</script>

@@ -1,83 +1,190 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/px-card/px-card.html">
-<link rel="import"
-	href="../../bower_components/px-data-table/px-data-table.html">
-<dom-module id="op-time-card"> <template>
-<style>
-h2 {
-	padding: 0;
-	margin: 0;
-}
-</style>
-<px-card> <iron-ajax id="weatherIronAjax"
-	url="http://api.openweathermap.org/data/2.5/forecast/city?id=1843702&APPID=dfbf7516736684d588a32c0634608769"
-	last-response="{{_weatherResponse}}"> </iron-ajax> <!-- decksIronAjax used to load data from local View Service API -->
-<div style="padding-top:20px;">
-<table style="padding-top:2.5%;float:left;"><tr><td>
-<input readOnly style="height:100%;border:none;;font-size:1.5rem;text-align:center;" type="text" value="운전 시간": size="10">
-</td></tr></table>
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../../bower_components/px-data-table/px-data-table.html">
+<dom-module id="op-time-card">
+    <template>
+        <style>
+        h2 {
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <px-card>
+            <iron-ajax id="opAjaxDay" url="/api/v1/datapoints" last-response="{{_deviceConsumeDay}}" method="POST" content-type="application/json" handle-as="json"> </iron-ajax>
+            <iron-ajax id="opAjaxMonth" url="/api/v1/datapoints" last-response="{{_deviceConsumeMonth}}" method="POST" content-type="application/json" handle-as="json"> </iron-ajax>
+            <iron-ajax id="weatherIronAjax" url="http://api.openweathermap.org/data/2.5/forecast/city?id=1843702&APPID=dfbf7516736684d588a32c0634608769" last-response="{{_weatherResponse}}"> </iron-ajax>
+            <!-- decksIronAjax used to load data from local View Service API -->
+            <div style="padding-top:20px;">
+                <table style="padding-top:2.5%;float:left;">
+                    <tr>
+                        <td>
+                            <input readOnly style="height:100%;border:none;;font-size:1.5rem;text-align:center;" type="text" value="운전 시간" : size="10">
+                        </td>
+                    </tr>
+                </table>
+                <div style="float: left; width: 70%;">
+                    <px-data-table hide-pagination-control id="op_time_table"></px-data-table>
+                </div>
+                <div style="width: 15%; float: left; margin:auto 2% auto;">
+                    <table style="border-style:dotted none;border-color:black;border-width:1px;">
+                        <tr>
+                            <td><img src="sunny.png" style="width:50px;" /></td>
+                            <td>
+                                <input readOnly style="border:none;font-size:1.5rem;" type="text" value="25 ℃" size="6" id="temperatureText">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input readOnly style="border:none;font-size:1.5rem;" type="text" size="6" value="습도">
+                            </td>
+                            <td>
+                                <input readOnly style="border:none;font-size:1.5rem;" type="text" size="6" value="10%" id="humidityText">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </px-card>
+    </template>
+    <script>
+    Polymer({
+        is: 'op-time-card',
+        properties: {
+            _response: {
+                type: Array,
+                computed: '_computeWeatherResponse(_weatherResponse)'
+            },
+            _day: {
+                type: Array,
+                computed: '_computedTableDay(_deviceConsumeDay)'
+            },
+            _dayData: {
+                type: Object
+            },
+            _month: {
+                type: Array,
+                computed: '_computedTableMonth(_deviceConsumeMonth)'
+            },
+            _monthData: {
+                type: Object,
+            }
+        },
 
+        _computeWeatherResponse: function() {
+            var time = new Date().getTime();
+            var gap  = 0;
+            var smallestGapIdx = 0;
+            var weatherList = this._weatherResponse.list;
+            var sun = weatherList[3].weather[0].description;
+            var humidity = weatherList[3].main.humidity;
+            var temp = weatherList[3].main.temp - 273.15;
 
-	<div style="float: left; width: 70%;">
-		<px-data-table hide-pagination-control
-			table-data='
-[{ 
-	"구분": "당일",
-	"1호기":"8",
-	"2호기":"0",
-	"3호기":"0",
-	"4호기":"5",
-	"5호기":"0",
-	"6호기":"0",
-	"8호기":"7",
-	"9호기":"0"}
-	,{
-	"구분": "당월",
-	"1호기":"165",
-	"2호기":"82",
-	"3호기":"95",
-	"4호기":"124",
-	"5호기":"72",
-	"6호기":"81",
-	"8호기":"103",
-	"9호기":"91"
-	}]'></px-data-table>
-	</div>
-	<div style="width: 15%; float: left; margin:auto 2% auto;">
-		<table style="border-style:dotted none;border-color:black;border-width:1px;">
-			<tr>
-				<td><img src="sunny.png"style="width:50px;"/></td>
-				<td><input readOnly style="border:none;font-size:1.5rem;"type="text" value="25 ℃" size="10" id="temperatureText"></td>
-			</tr>
-			<tr>
-				<td><input readOnly style="border:none;font-size:1.5rem;"type="text" size="10" value="습도"></td>
-				<td><input readOnly style="border:none;font-size:1.5rem;"type="text" size="10" value="10%" id="humidityText"></td>
-			</tr>
-		</table>
-	</div>
-</div>
-</px-card> </template> <script>
-	Polymer({
-		is : 'op-time-card',
-		properties : {
-			_response : {
-				type : Array,
-				computed : '_computeWeatherResponse(_weatherResponse)'
-			},
-		},
-		_computeWeatherResponse : function() {
-			/* console.log("weather", this._weatherResponse); */
-		},
-		ready : function() {
-			var _this = this;
-			_this.$.weatherIronAjax.generateRequest();
-			setInterval(function() {
-				_this.$.weatherIronAjax.generateRequest();
-			}, 600000);
-		},  
-		deckStateChanged: function(newState, oldState) {
+            var ht = document.getElementById("humidityText");
+            var tt = document.getElementById("temperatureText");
 
-		  },
-		behaviors : [px.card]
-	});
-</script> </dom-module>
+            ht.value = humidity+"%";
+            tt.value = temp.toPrecision(3)+" ℃";
+
+        },
+        _computedTableDay: function() {
+            console.log("_deviceConsumeDay", this._deviceConsumeDay);
+            var data = this._deviceConsumeDay.tags;
+            var dayData = {};
+            dayData["구분"] = "당일";
+            dayData["1호기"] = parseInt((new Date().getTime() - data[0].results[0].values[0][1]) / 3600000);
+            dayData["2호기"] = 0;
+            dayData["3호기"] = 0;
+            dayData["4호기"] = 0;
+            dayData["5호기"] = parseInt((new Date().getTime() - data[1].results[0].values[0][1]) / 3600000);
+            dayData["6호기"] = 0;
+            dayData["8호기"] = parseInt((new Date().getTime() - data[2].results[0].values[0][1]) / 3600000);
+            dayData["9호기"] = parseInt((new Date().getTime() - data[3].results[0].values[0][1]) / 3600000);
+            this._dayData = dayData;
+            console.log("[this._dayData, this._monthData]",[this._dayData, this._monthData]);
+            if(this._monthData != null){
+                this.$.op_time_table.tableData = [this._dayData, this._monthData];
+            }
+        },
+        _computedTableMonth: function() {
+            console.log("_deviceConsumeMonth", this._deviceConsumeMonth);
+            var data = this._deviceConsumeMonth.tags;
+            console.log("aaaaaaaaaaaaaaaaaaaa", data);
+            var monthData = {};
+            monthData["구분"] = "당월";
+            monthData["1호기"] = parseInt((new Date().getTime() - data[0].results[0].values[0][1]) / 3600000);
+            monthData["2호기"] = 0;
+            monthData["3호기"] = 0;
+            monthData["4호기"] = 0;
+            monthData["5호기"] = parseInt((new Date().getTime() - data[1].results[0].values[0][1]) / 3600000);
+            monthData["6호기"] = 0;
+            monthData["8호기"] = parseInt((new Date().getTime() - data[2].results[0].values[0][1]) / 3600000);
+            monthData["9호기"] = parseInt((new Date().getTime() - data[3].results[0].values[0][1]) / 3600000);
+            console.log("tabledata", monthData);
+            this._monthData = monthData;
+            console.log("[this._dayData, this._monthData]",[this._dayData, this._monthData]);
+            if(this._dayData != null){
+                this.$.op_time_table.tableData = [this._dayData, this._monthData];
+            }
+
+        },
+        ready: function() {
+            var _this = this;
+            _this.$.opAjaxDay.body = this.requestBodyDay();
+            _this.$.opAjaxMonth.body = this.requestBodyMonth();
+            _this.$.weatherIronAjax.generateRequest();
+            _this.$.opAjaxDay.generateRequest();
+            _this.$.opAjaxMonth.generateRequest();
+        },
+        deckStateChanged: function(newState, oldState) {},
+        requestBodyDay: function() {
+            var body = JSON.stringify({
+                "tags": [{
+                    "name": "KW-401",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-402",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-403",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-404",
+                    "order": "asc",
+                    "limit": 1
+                }],
+                "start": Date.parse(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+                "end": new Date().getTime()
+            });
+            return body;
+        },
+        requestBodyMonth: function() {
+            var body = JSON.stringify({
+                "tags": [{
+                    "name": "KW-401",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-402",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-403",
+                    "order": "asc",
+                    "limit": 1
+                }, {
+                    "name": "KW-404",
+                    "order": "asc",
+                    "limit": 1
+                }],
+                "start": Date.parse(new Date().getFullYear(), new Date().getMonth(), 1),
+                "end": new Date().getTime()
+            });
+            return body;
+        },
+        behaviors: [px.card]
+    });
+    </script>
+</dom-module>

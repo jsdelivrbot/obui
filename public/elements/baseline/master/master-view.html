@@ -1,0 +1,13 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-card/px-deck.html">
+<dom-module id="master-view"> <template> <px-deck
+	context="{{context}}"> <my-master-info-card id="master_info"
+	title="설비 등록"></my-master-info-card> <my-master-grid-card
+	id="master_datagrid" title="설비 정보"></my-master-grid-card> </px-deck> </template> <script>
+    Polymer({
+      is: 'master-view',
+      properties: {
+      },
+	behaviors:[px.deck]
+    });
+  </script> </dom-module>

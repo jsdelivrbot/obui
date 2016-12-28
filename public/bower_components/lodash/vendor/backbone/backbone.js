@@ -1486,6 +1486,7 @@
   var Router = Backbone.Router = function(options) {
     options || (options = {});
     this.preinitialize.apply(this, arguments);
+    console.log("\n\noptions\n\n", options);
     if (options.routes) this.routes = options.routes;
     this._bindRoutes();
     this.initialize.apply(this, arguments);

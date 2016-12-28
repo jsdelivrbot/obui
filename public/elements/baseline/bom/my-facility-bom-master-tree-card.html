@@ -1,0 +1,79 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../file-tree-master/file-tree.html"/>
+
+<script src="../webcomponentsjs/webcomponents.js"></script>
+
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap.css">
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap-theme.css">
+
+
+<dom-module id="my-facility-bom-master-tree-card">
+  <template>
+    <px-card header-text={{title}}>
+
+      <file-tree></file-tree>
+    </px-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'my-facility-bom-master-tree-card',
+  properties: {
+    tree_count: {
+      type: Number
+    }
+  },
+  ready: function() {
+    var self = this;
+    self.tree_count = 0;
+  },
+  getGridData: function(uri, parameter) {
+  	var self = this;
+    px.dealer.httpRequest({
+      url: uri + "/" + parameter,
+      method: 'GET'
+    }).then(function(data){
+			document.querySelector("file-tree").data = self.setDataToTree(data);
+			document.querySelector("file-tree").addEventListener("folderSelected", function(e){
+	      var clicked = e.detail.data.description;
+				self.nodeSelected(clicked);
+	    });
+    });
+	},
+  nodeSelected: function(data){
+    var self = this;
+    var parameter = new Object();
+    parameter.gridCommand="setUnit";
+    parameter.detail = data;
+    self.updateDeck(parameter);
+  },
+  setDataToTree : function( data ){
+		var self = this;
+		var object = data;
+    var temp = new Object();
+    temp.name = (self.tree_count++) == 0 ? data.facility_name : data.facility_unit_name;
+    temp.shared = false;
+    temp.open = true;
+
+		temp.children = new Array();
+
+		var children = data.facility_unit_list;
+		for (var child in children){
+			temp.children.push(self.setDataToTree(children[child]));
+		}
+		delete object["facility_unit_list"];
+		temp.description = object;
+		return temp;
+	},
+  deckStateChanged: function(newDeckState, oldDeckState){
+    var self = this;
+    if(newDeckState.gridCommand == "setTree"){
+      self.tree_count = 0;
+      var parameter = newDeckState.parameters;
+      self.getGridData('/api/tree/facility_unit', parameter);
+    }
+  },
+  behaviors: [px.card]
+});
+</script>

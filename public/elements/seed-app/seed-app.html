@@ -1,191 +1,194 @@
 <!-- import polymer -->
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
 <!-- import page level css -->
 <link rel="import" href="seed-app-styles.html">
-
 <!-- app route -->
 <link rel="import" href="../../bower_components/app-route/app-location.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
-
 <!-- px components -->
 <link rel="import" href="../../bower_components/px-app-nav/px-app-nav.html">
 <link rel="import" href="../../bower_components/px-view/px-view.html">
-
 <link rel="import" href="../ge-svg-logo/ge-svg-logo.html">
 <link rel="import" href="../predix-logo/predix-logo.html">
 <link rel="import" href="../seed-footer/seed-footer.html">
-
 <dom-module id="seed-app">
-  <template>
-
-    <!-- apply imported seed app style module -->
-    <style include="seed-app-styles"></style>
-
-    <header role="banner" class="flex flex--middle">
-      <div class="viewport flex">
-        <h3 class="flex__item app-title"><ge-svg-logo class="u-mr--"></ge-svg-logo> Seed Application</h3>
-        <div class="flex__item">
-          <div class="flex" style="text-align:right;">
-            <h3 class="flex__item weight--normal logo">Powered by <predix-logo style="display:inline-block; width: 82px;" class="flex__item"></predix-logo></h3>
-          </div>
+    <template>
+        <!-- apply imported seed app style module -->
+        <style include="seed-app-styles"></style>
+        <header role="banner" class="flex flex--middle">
+            <div class="viewport flex">
+                <h3 class="flex__item app-title">
+			<ge-svg-logo class="u-mr--"></ge-svg-logo>
+			Seed Application
+		</h3>
+                <div class="flex__item">
+                    <div class="flex" style="text-align: right;">
+                        <h3 class="flex__item weight--normal logo">
+					Powered by
+					<predix-logo style="display:inline-block; width: 82px;"
+						class="flex__item"></predix-logo>
+				</h3>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="viewport">
+            <div class="content-wrapper">
+                <px-app-nav class="navbar" nav-items="[[navItems]]" path-prefix="[[pathPrefix]]"> </px-app-nav>
+                <main class="u-pt-- u-pr-- u-pl--" role="main">
+                    <!-- app-location captures url and assigns _route value -->
+                    <app-location id="carbonLocation" route="{{_route}}" use-hash-as-path>
+                    </app-location>
+                    <app-route route="[[_route]]" pattern="/demoboard" active="{{_demoboardsActive}}"> </app-route>
+                    <px-view active="[[_demoboardsActive]]" element-href="/elements/dashboard/demoboards-view.html"> </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <app-route route="[[_route]]" pattern="/baseline" active="{{_baselineActive}}"> </app-route>
+                    <px-view active="[[_baselineActive]]" element-href="/elements/baseline/baseline/baseline-view.html">
+                    </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <app-route route="[[_route]]" pattern="/baseline/bom" active="{{_bomActive}}"> </app-route>
+                    <px-view active="[[_bomActive]]" element-href="/elements/baseline/bom/bom-view.html"> </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <app-route route="[[_route]]" pattern="/baseline/master" active="{{_masterActive}}"> </app-route>
+                    <px-view active="[[_masterActive]]" element-href="/elements/baseline/master/master-view.html">
+                    </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <app-route route="[[_route]]" pattern="/baseline/meter" active="{{_meterActive}}"> </app-route>
+                    <px-view active="[[_baselineActive]]" element-href="/elements/baseline/meter/meter-view.html"> </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <app-route route="[[_route]]" pattern="/baseline/unit" active="{{_unitActive}}"> </app-route>
+                    <px-view active="[[_unitActive]]" element-href="/elements/baseline/unit/unit-view.html"> </px-view>
+                    <!-- ------------------------------------------------------------------------------------------------------------------------ -->
+                    <!-- /blankpage route and view -->
+                    <app-route route="[[_route]]" pattern="/blankpage" active="{{_blankpageActive}}"> </app-route>
+                    <px-view active="[[_blankpageActive]]" element-href="/elements/views/blankpage-view.html"> </px-view>
+                    <!-- /winddata route and view -->
+                    <app-route route="[[_route]]" pattern="/winddata" active="{{_winddataActivre}}"> </app-route>
+                    <px-view active="[[_winddataActive]]" element-href="/elements/views/winddata-view.html"> </px-view>
+                </main>
+            </div>
         </div>
-      </div>
-    </header>
-
-    <div class="viewport">
-
-      <div class="content-wrapper">
-        <px-app-nav
-          class="navbar"
-          nav-items="[[navItems]]"
-          path-prefix="[[pathPrefix]]">
-        </px-app-nav>
-
-        <main class="u-pt-- u-pr-- u-pl--" role="main">
-
-          <!-- app-location captures url and assigns _route value -->
-          <app-location
-            id="carbonLocation"
-            route="{{_route}}"
-            use-hash-as-path>
-          </app-location>
-
-          <app-route
-            route="[[_route]]"
-            pattern="/demoboard"
-            active="{{_demoboardsActive}}">
-          </app-route>
-
-          <px-view
-            active="[[_demoboardsActive]]"
-            element-href="/elements/views/demoboards-view.html">
-          </px-view>
-
-          <!-- /blankpage route and view -->
-          <app-route
-            route="[[_route]]"
-            pattern="/blankpage"
-            active="{{_blankpageActive}}">
-          </app-route>
-          <px-view
-            active="[[_blankpageActive]]"
-            element-href="/elements/views/blankpage-view.html">
-          </px-view>
-
-          <!-- /winddata route and view -->
-          <app-route
-            route="[[_route]]"
-            pattern="/winddata"
-            active="{{_winddataActive}}">
-          </app-route>
-          <px-view
-            active="[[_winddataActive]]"
-            element-href="/elements/views/winddata-view.html">
-          </px-view>
-
-        </main>
-
-      </div>
-    </div>
-
-    <seed-footer footer-links='[[footerLinks]]'></seed-footer>
-
-  </template>
-  <script>
+        <seed-footer footer-links='[[footerLinks]]'></seed-footer>
+    </template>
+    <script>
     Polymer({
-      is: 'seed-app',
+        is: 'seed-app',
 
-      properties: {
+        properties: {
 
-        routesActive: {
-          type: Boolean,
-          value: false
+            routesActive: {
+                type: Boolean,
+                value: false
+            },
+
+            //Global application object
+            global: {
+                type: Object,
+                value: function() {
+                    return {
+                        version: '1.0',
+                        name: 'Predix UI Seed',
+                        session: {}
+                    }
+                }
+            },
+            navItems: {
+                type: Array,
+                value: function() {
+                    return [{
+                        "label": "Dashboard",
+                        "path": "/demoboard",
+                        "icon": "fa-tachometer",
+                        "subitems": [{
+                                "label": "종합 Dashboard",
+                                "path": "/demoboard",
+                                "selected": false
+                            }, {
+                                "label": "에너지 통합 모니터링",
+                                "path": "/blankpage",
+                                "selected": false
+                            }
+
+                        ],
+                    }, {
+                        "label": "기준정보",
+                        "path": "/baseinfo",
+                        "icon": "fa-file-o",
+                        "subitems": [{
+                            "label": "기준 정보",
+                            "path": "/baseline"
+                        }, {
+                            "label": "배출계수 관리",
+                            "path": "/manageemissionfactor"
+                        }, {
+                            "label": "가동시간&부하율 관리",
+                            "path": "/manageoptimeloadfactor"
+                        }, {
+                            "label": "설비 마스터",
+                            "path": "/base-info.facilities"
+                        }, {
+                            "label": "계측기 정보",
+                            "path": "/base-info.meters"
+                        }, {
+                            "label": "에너지 배분 기준",
+                            "path": "/base-info.energy-distribution"
+                        }, {
+                            "label": "설비 Unit 정보",
+                            "path": "/base-info.facility-unit"
+                        }, {
+                            "label": "설비 BOM 정보",
+                            "path": "/base-info.facility-bom"
+                        }]
+                    }]
+                }
+            },
+
+            footerLinks: {
+                type: Array,
+                value: function() {
+                    return [{
+                        "label": "Privacy",
+                        "href": "#/dashboards",
+                        "target": "_blank"
+                    }, {
+                        "label": "Terms",
+                        "href": "#/dashboards",
+                        "target": "_blank"
+                    }, {
+                        "label": "Contact",
+                        "href": "#/dashboards",
+                        "target": "_blank"
+                    }, {
+                        "label": "Accessibility",
+                        "href": "#/dashboards",
+                        "target": "_blank"
+                    }, {
+                        "label": "Cookies",
+                        "href": "#/dashboards",
+                        "target": "_blank"
+                    }]
+                }
+            },
+
+            // Sets app default base URL for client-side routing
+            pathPrefix: {
+                type: String,
+                value: '#'
+            }
         },
 
-        //Global application object
-        global: {
-          type: Object,
-          value: function() {
-            return {
-              version: '1.0',
-              name: 'Predix UI Seed',
-              session: {}
-            }
-          }
+        ready: function() {
+            this._checkForDefaultRoute();
         },
 
-        navItems: {
-          type: Array,
-          value: function() {
-            return [{
-              "label": "Dashboards",
-              "path": "/demoboard",
-              "icon": "fa-tachometer"
-            }, {
-              "label": "Blank Page",
-              "path": "/blankpage",
-              "icon": "fa-file-o"
+        _checkForDefaultRoute: function() {
+            // set default route to /dashboards
+            var l = window.location;
+            if ((l.hash === "#/" || l.hash === "") && l.pathname === "/") {
+                l.hash = "/demoboard";
             }
-            /*
-            //Uncomment this block to show the Wind Data navigation item on the menu.
-            ,{
-              "label": "Wind Data",
-              "path": "/winddata",
-              "icon": "fa-line-chart"
-            }
-            */
-            ]
-          }
-        },
-
-        footerLinks: {
-          type: Array,
-          value: function() {
-            return [{
-              "label": "Privacy",
-              "href": "#/dashboards",
-              "target": "_blank"
-            }, {
-              "label": "Terms",
-              "href": "#/dashboards",
-              "target": "_blank"
-            }, {
-              "label": "Contact",
-              "href": "#/dashboards",
-              "target": "_blank"
-            }, {
-              "label": "Accessibility",
-              "href": "#/dashboards",
-              "target": "_blank"
-            }, {
-              "label": "Cookies",
-              "href": "#/dashboards",
-              "target": "_blank"
-            }
-          ]
-          }
-        },
-
-        // Sets app default base URL for client-side routing
-        pathPrefix: {
-          type: String,
-          value: '#'
         }
-      },
-
-      ready: function(){
-        this._checkForDefaultRoute();
-      },
-
-      _checkForDefaultRoute: function() {
-        // set default route to /dashboards
-        var l = window.location;
-        if((l.hash === "#/" || l.hash === "") && l.pathname === "/") {
-          l.hash = "/demoboard";
-        }
-      }
 
     });
-  </script>
+    </script>
 </dom-module>

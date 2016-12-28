@@ -1,0 +1,220 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../../bower_components/px-card/px-card.html"/>
+<link rel="import" href="../../../bower_components/px-data-table/px-data-table.html"/>
+<script src="../../../bower_components/moment/min/moment.min.js"></script>
+
+<dom-module id="my-energy-source-card">
+<template>
+  <px-card header-text={{title}}>
+
+    <div class="row">
+      <div class="form-group">
+        <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>사업장이름</label>
+          <select class="form-control" id="energy_source_site"/><option value="default">선택</option></select></select>
+        </div>
+        <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>에너지원코드</label>
+          <input type="text" class="form-control" id="energy_source_code" disabled/>
+        </div>
+        <div class="col-md-3"><label for="exampleInputName2">에너지원이름</label>
+          <input type="text" class="form-control" id="energy_source_name"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-header-links layout layout--right" style="margin-top:30px;">
+      <div class="layout__item u-1/6">
+        <div class="card-header-links layout layout--right">
+          <px-data-table id="energySourceGrid" table-rows selectable></px-data-table>
+        </div>
+      </div>
+    </div>
+  </px-card>
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-energy-source-card',
+	properties: {
+		classification: {
+			type: String,
+			value: "energy_source",
+			notify: true
+		},
+		allData: {
+			type: Object,
+			notify: true
+		},
+    arr_energy_source_code: {
+      type: Array,
+      notify: true
+    },
+    arr_columns: {
+      type: Array,
+      notify: true
+    }
+  },
+  init: function() {
+    this.hideCard();
+  },
+  ready: function() {
+    var self = this;
+    self.arr_energy_source_code = [];
+    this.$.energySourceGrid.addEventListener("px-row-click", function(e) {
+      var row_data;
+      var clickedRow = e.detail.row, selected = clickedRow._selected;
+      if(!selected) {
+        var site_code = clickedRow.row.사업장코드.value;
+        var energy_source_code = clickedRow.row.에너지원코드.value;
+        var energy_source_name = clickedRow.row.에너지원이름.value;
+
+        $("#energy_source_site").val(site_code).attr("selected", "selected");
+
+        var input_energy_source_code = document.getElementById("energy_source_code");
+        var input_energy_source_name = document.getElementById("energy_source_name");
+
+        input_energy_source_code.value = energy_source_code;
+        input_energy_source_name.value = energy_source_name;
+
+        self.arr_energy_source_code[clickedRow.row.dataIndex] = energy_source_code;
+        row_data = self.getDataFromSelectedRow(self.arr_columns, clickedRow.row);
+      }
+      else if(selected){
+        var input_energy_source_code = document.getElementById("energy_source_code");
+        var input_energy_source_name = document.getElementById("energy_source_name");
+
+        $("#energy_source_site option:eq(0)").attr("selected", "selected");
+
+        input_energy_source_code.value = null;
+        input_energy_source_name.value = null;
+		}
+      else {
+        row_data = null;
+        delete self.arr_energy_source_code[clickedRow.row.dataIndex];
+      }
+      self.row_data = row_data;
+    });
+
+		this.$.energySourceGrid.addEventListener("px-select-all-click", function(e){
+      self.arr_energy_source_code = [];
+			var allSelectedRows = e.detail;
+      if(allSelectedRows.length != 0) {
+        allSelectedRows.forEach(function(d) {
+          self.arr_energy_source_code[d.row.dataIndex] = d.row.에너지원코드.value;
+        });
+      } else {
+        self.arr_energy_source_code = [];
+      }
+		});
+  },
+  initAllInputForms: function() {
+
+    var select_site = document.getElementById("energy_source_site");
+    this.setSelectSiteList(select_site, "site");
+
+    $('#energy_source_site').change(function() {
+    	var site_code = this.value;
+    });
+
+    var input_energy_source_code = document.getElementById("energy_source_code");
+    var input_energy_source_name = document.getElementById("energy_source_name");
+
+    input_energy_source_code.value = "";
+    input_energy_source_name.value = "";
+  },
+  getGridData: function() {
+    var self = this;
+    px.dealer.httpRequest({
+      url: "api/datagrid/code",
+      method: 'POST',
+      data: [{"key": "classification", "value": self.classification}]
+    }).then(function(data) {
+      self.allData = data.tableData;
+      self.arr_columns = data.columns;
+      var uiColumn = data.columns;
+      var uiData = [];
+      var count = 1;
+      data.tableData.forEach(function(row) {
+        var uiRow = {
+          번호: count
+        };
+        data.columns.forEach(function(col) {
+          uiRow[col.label] = row[col.field]; //key:value
+        });
+        count++;
+        uiData.push(uiRow);
+      });
+      self.$.energySourceGrid.tableData = uiData;
+    });
+  },
+  add_newData: function() {
+    var self = this;
+    self.initAllInputForms();
+  },
+  updateData: function() {
+		var self = this;
+    var uri = (self.row_data == null ? "" : self.row_data.uri);
+    var classification = self.classification;
+    var site_code = document.getElementById("energy_source_site").value;
+    var site_name = $("#energy_source_site option:selected").text();
+    var energy_source_code = document.getElementById("energy_source_code").value;
+    var energy_source_name = document.getElementById("energy_source_name").value;
+    if(energy_source_name == "") {
+      alert("에너지원이름은 필수 입력입니다.");
+    } else {
+
+      var parameters = {
+        "uri": uri,
+        "classification": classification,
+        "site_code": site_code,
+        "energy_source_code": energy_source_code,
+        "energy_source_name": energy_source_name
+      }
+			console.log(parameters);
+      this._httpRequest("/api/assetmng/" + self.classification, "PUT", parameters);
+  		// var event = new Object();
+  		// event.gridCommand = "inquiry";
+  		// event.parameters = [];
+  		// self.updateDeck(event);
+    }
+  },
+  deleteData: function() {
+		var self = this;
+		if(self.arr_energy_source_code == null || self.arr_energy_source_code.length == 0) {
+			alert ("삭제할 데이터를 선택하세요.");
+		} else {
+			var data = {
+				"delete_code_list": []
+			};
+			self.arr_energy_source_code.forEach(function(d) {
+				data.delete_code_list.push(d);
+			});
+			console.log(data);
+			// this._httpRequest("/api/assetmng/" + self.classification, "DELETE", data);
+		}
+  },
+  deckStateChanged: function(newState, oldState) {
+    var self = this;
+    if(this.isHiddenCard()) {
+      if(newState.clickedInfo == self.classification) {
+        this.showCard();
+        self.initAllInputForms();
+        self.getGridData();
+      }
+    } else {
+      if(newState.clickedInfo != self.classification) {
+        this.hideCard();
+      } else {
+        if(newState.command == 'new' + self.classification){
+          this.add_newData();
+        } else if(newState.command == 'update' + self.classification){
+          this.updateData();
+        } else if(newState.command == 'delete' + self.classification){
+          this.deleteData();
+        }
+      }
+    }
+  },
+  behaviors: [px.card]
+});
+</script>

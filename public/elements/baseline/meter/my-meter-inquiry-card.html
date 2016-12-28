@@ -1,0 +1,123 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../px-dropdown/px-dropdown.html" />
+<link rel="import" href="../px-calendar-picker/px-calendar-picker.html" />
+<link rel="import" href="../px-datetime-picker/px-datetime-picker.html" />
+<script src="../moment/min/moment.min.js"></script>
+<dom-module id="my-meter-inquiry-card">
+    <template>
+        <px-card header-text={{title}}>
+            <div class="row">
+                <div class="row">
+                    <div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+                        <span>
+                    <button class="btn btn-default" id="inquiry" on-click="inquiryButtonClick">조회</button>
+                    <button class="btn btn-default" id="newSubmit" on-click="new_submitData">추가</button>
+                    <button class="btn btn-default" id="deleteInform" on-click="deleteData">삭제</button>
+                    </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <label for="exampleInputName2"><span style="color:red;">*</span>사업장</label>
+                        <select class="form-control" id="site">
+                            <option value="default">전체</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="exampleInputName2">TAG ID</label>
+                        <input type="text" class="form-control" id="tag_id">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="exampleInputName2">계측기 명</label>
+                        <select id="meter" class="form-control">
+                            <option value="default">선택</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="exampleInputName2">물리량 명</label>
+                        <select id="physics" class="form-control">
+                            <option value="default">선택</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </px-card>
+    </template>
+</dom-module>
+<script>
+Polymer({
+    is: 'my-meter-inquiry-card',
+    properties: {},
+    ready: function() {
+        var self = this;
+
+        var select_site = document.getElementById("site");
+        this.setSiteList(select_site, "site");
+        self.initUpperList("default");
+
+        $('#site').change(function() {
+            var site_code = this.value;
+            var select_meter = document.getElementById("meter");
+            self.setUpperList(site_code, select_meter, "meter");
+
+            var select_physics = document.getElementById("physics");
+            self.setUpperList(site_code, select_physics, "physics");
+        });
+    },
+    initUpperList: function(site_code) {
+        var select_meter = document.getElementById("meter");
+        var select_physics = document.getElementById("physics");
+
+        this.setUpperList(site_code, select_meter, "meter");
+        this.setUpperList(site_code, select_physics, "physics");
+    },
+    new_submitData: function() {
+        var self = this;
+        self.updateDeck({
+            'command': 'new'
+        });
+    },
+    inquiryButtonClick: function() {
+        var self = this;
+
+        var keys = [
+            "site_code", "tag_id", "meter_code", "physics_code"
+        ];
+
+        var site_code = document.getElementById("site").value;
+        var tag_id = document.getElementById("tag_id").value;
+        var meter_code = document.getElementById("meter").value;
+        var physics_code = document.getElementById("physics").value;
+
+        var parameters = [];
+        parameters.push(site_code);
+        if (tag_id != null) {
+            if (typeof tag_id == 'string') {
+                parameters.push(tag_id);
+            } else {
+                alert("Tag ID는 문자여야 합니다.");
+            }
+        } else {
+            alert("Tag ID를 입력하세요.");
+        }
+        parameters.push(meter_code);
+        parameters.push(physics_code);
+
+        data = this.makeParameter(parameters, keys);
+
+        var event = new Object();
+        event.gridCommand = "inquiry";
+        event.parameters = data;
+        self.updateDeck(event);
+    },
+    deleteData: function() {
+        var self = this;
+        var event = new Object();
+        event.command = "delete";
+        self.updateDeck(event);
+    },
+    deckStateChanged: function(newState, oldState) {},
+    behaviors: [px.card]
+});
+</script>

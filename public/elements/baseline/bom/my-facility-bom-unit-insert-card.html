@@ -1,0 +1,407 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../px-data-table/px-data-table.html" />
+<script src="../moment/min/moment.min.js"></script>
+
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap.css">
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap-theme.css">
+
+<dom-module id="my-facility-bom-unit-insert-card">
+  <template>
+    <px-card header-text={{title}}>
+      <div class="row">
+        <div class="row">
+          <div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+            <span>
+              <button class="btn btn-default" id="updateData" on-click="updateData">저장</button>
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-3">
+            <label for="exampleInputName2">설비 UNIT 코드</label>
+            <input type="text" class="form-control" id="facility_unit_code" disabled>
+          </div>
+          <div class="col-md-3">
+            <label for="exampleInputName2">설비 UNIT 이름</label>
+            <input type="text" class="form-control" id="facility_unit_name">
+          </div>
+        </div>
+      </div>
+      <div id="facility-unit-grid-div" class="row" style="margin-top:30px;">
+        <px-data-table id="facilityUnitInsertGrid" striped table-rows selectable>
+          <px-data-table-column name="uri" label="URI"></px-data-table-column>
+          <px-data-table-column name="site_code" label="사업장코드"></px-data-table-column>
+          <px-data-table-column name="site_name" label="사업장이름"></px-data-table-column>
+          <px-data-table-column name="facility_unit_code" label="설비유닛코드"></px-data-table-column>
+          <px-data-table-column name="facility_unit_name" label="설비유닛이름"></px-data-table-column>
+          <px-data-table-column name="physics_code" label="물리량코드"></px-data-table-column>
+          <px-data-table-column name="physics_name" label="물리량이름"></px-data-table-column>
+          <px-data-table-column name="type" label="계측" type="html"></px-data-table-column>
+          <px-data-table-column name="value" label="값" type="html"></px-data-table-column>
+          <px-data-table-column name="tag_id" label="TAG_ID" type="html"></px-data-table-column>
+        </px-data-table>
+      </div>
+    </px-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'my-facility-bom-unit-insert-card',
+  properties: {
+    facility_code: {
+      type: String,
+      default: ""
+    },
+    facility_info: {
+      type: Array,
+      notify: true
+    },
+    facility_unit_info: {
+      type: Array,
+      notify: true
+    },
+    arr_selected_row_index: {
+      type: Array,
+      notify: true
+    }
+  },
+  init: function() {
+    var self = this;
+    this.getFacilityUnitInsertGridData('/facility_unit_type/getChars', '[]');
+  },
+  ready: function() {
+    var self = this;
+    self.facility_info = [];
+    self.facility_unit_info = [];
+    self.arr_selected_row_index = [];
+
+    document.getElementById("facilityUnitInsertGrid").addEventListener("px-cell-click", function(e) {
+      var clickedColumn = e.detail.column;
+      var clickedRow = e.detail.row;
+
+      var radio_buttons = document.getElementsByName("radio_button_" + clickedRow.row.dataIndex);
+      if(clickedRow._selected == true && radio_buttons[0].disabled == false && radio_buttons[1].disabled == false && radio_buttons[2].disabled == false) {
+        var checkedRadioButton;
+        for (index in radio_buttons) {
+          if (radio_buttons[index].checked) {
+            checkedRadioButton = radio_buttons[index];
+          }
+        }
+
+        if (checkedRadioButton != null) {
+          var input_value = document.getElementById("value_" + clickedRow.row.dataIndex);
+          var input_tag_id = document.getElementById("tag_id_" + clickedRow.row.dataIndex);
+          input_value.value = "";
+          input_tag_id.value = "";
+          switch (checkedRadioButton.value) {
+            case 'METERING':
+              input_value.disabled = true;
+              input_tag_id.disabled = false;
+              break;
+            case 'STATIC':
+              input_value.disabled = false;
+              input_tag_id.disabled = true;
+              break;
+            case 'WRITING':
+              input_value.disabled = true;
+              input_tag_id.disabled = true;
+              break;
+          }
+        }
+      }
+    });
+
+    this.$.facilityUnitInsertGrid.addEventListener("px-row-click", function(e) {
+      var clickedRow = e.detail.row, selected = clickedRow._selected;
+      var radio_buttons = document.getElementsByName("radio_button_" + clickedRow.row.dataIndex);
+      for(var i=0; i<radio_buttons.length; i++) {
+        radio_buttons[i].disabled = selected;
+      }
+
+      if(!selected) {
+        self.arr_selected_row_index[clickedRow.row.dataIndex] = clickedRow.row.dataIndex;
+      } else {
+        delete self.arr_selected_row_index[clickedRow.row.dataIndex];
+      }
+    });
+  },
+  getFacilityUnitInsertGridData: function(site_code, facility_unit_type_code, facility_info) {
+    var self = this;
+    var keys = [
+      "site_code",
+      "facility_unit_type_code"
+    ];
+    var parameters = [];
+    parameters.push(site_code);
+    parameters.push(facility_unit_type_code);
+    var data = this.makeParameter(parameters, keys);
+    px.dealer.httpRequest({
+      url: "/api/datagrid/facility_unit_type/getChars",
+      method: 'POST',
+      data: data
+    }).then(function(data) {
+      self.$.facilityUnitInsertGrid.tableData = [];
+
+      var composingData = [];
+      for (index in data.tableData) {
+        composingData.push(data.tableData[index]);
+      }
+      for (index in composingData) {
+        var type = composingData[index].type;
+        var value = composingData[index].value;
+        var tag_id = composingData[index].tag_id;
+
+        composingData[index].type = createRadioButton(null, index);
+        composingData[index].value = createInputField("value", index, value, type);
+        composingData[index].tag_id = createInputField("tag_id", index, tag_id, type);
+      }
+      self.$.facilityUnitInsertGrid.tableData = composingData;
+    });
+  },
+  getFacilityUnitModifyGridData: function(facility_unit_code) {
+    var self = this;
+    var keys = [
+      "facility_unit_code"
+    ];
+    var parameters = [];
+    parameters.push(facility_unit_code);
+    var data = this.makeParameter(parameters, keys);
+    px.dealer.httpRequest({
+      url: "/api/datagrid/facility_unit/getChars",
+      method: 'POST',
+      data: data
+    }).then(function(data) {
+      console.log(data);
+      self.$.facilityUnitInsertGrid.tableData = [];
+
+      var composingData = [];
+      for (index in data.tableData) {
+        composingData.push(data.tableData[index]);
+      }
+      for (index in composingData) {
+        var physics_type = composingData[index].physics_type;
+        var type = composingData[index].type;
+        var value = composingData[index].value;
+        var tag_id = composingData[index].tag_id;
+        composingData[index].type = createRadioButton(physics_type, index);
+        composingData[index].value = createInputField("value", index, value, type);
+        composingData[index].tag_id = createInputField("tag_id", index, tag_id, type);
+      }
+      self.$.facilityUnitInsertGrid.tableData = composingData;
+    });
+  },
+  // 설비BOM정보 -> 설비유닛 추가하는거 일단 보류(getRowDataFromSelectedRow, updateData, buildQuery), 2016-12-08
+  getRowDataFromSelectedRow: function(columns, row) {
+    var data = new Object();
+    // columns.forEach(function(d))
+  },
+  updateData: function() {
+
+    var self = this;
+
+    var selected_row_index = this.removeEmptyElementInArray(self.arr_selected_row_index);
+    var unit_physics_list = [];
+    self.$.facilityUnitInsertGrid.selectedRows.forEach(function(d, i) {
+      var physics_object = {};
+      physics_object.physics_code = d.row.physics_code.value;
+      physics_object.physics_name = d.row.physics_name.value;
+      physics_object.physics_type = "";
+      var radio_buttons = document.getElementsByName("radio_button_" + selected_row_index[i]);
+      radio_buttons.forEach(function(d) {
+        if(d.checked) {
+          physics_object.physics_type = d.value;
+        }
+      });
+      var value = document.getElementById("value_" + selected_row_index[i]).value;
+      var tag_id = document.getElementById("tag_id_" + selected_row_index[i]).value;
+
+      physics_object.value = value;
+      physics_object.tag_id = tag_id;
+
+      unit_physics_list.push(physics_object);
+    });
+    console.log(unit_physics_list);
+
+    var facility_unit_code = document.getElementById("facility_unit_code").value;
+    var facility_unit_name = document.getElementById("facility_unit_name").value;
+
+    var parameters;
+    if(self.facility_unit_info.length == 0) {         // addition
+      parameters = {
+        "uri": "",
+        "site_code": self.facility_info.site_code,
+        "site_name": self.facility_info.site_name,
+        "facility_code": self.facility_info.facility_code,
+        "facility_name": self.facility_info.facility_name,
+        "sub_team_code": self.facility_info.sub_team_code,
+        "sub_team_name": self.facility_info.sub_team_name,
+        "sub_process_code": self.facility_info.sub_process_code,
+        "sub_process_name": self.facility_info.sub_process_name,
+        "sub_facility_group_code": self.facility_info.sub_facility_group_code,
+        "sub_facility_group_name": self.facility_info.sub_facility_group_name,
+        "facility_unit_code": facility_unit_code,
+        "facility_unit_name": facility_unit_name,
+        "facility_unit_type_code": self.facility_info.facility_unit_type_code,
+        "facility_unit_type_name": self.facility_info.facility_unit_type_name,
+        "reading_type_code": "",
+        "reading_type_name": "",
+        "unit_physics_list": unit_physics_list
+      }
+    } else if(self.facility_info.length == 0){        // modification
+      parameters = {
+        "uri": self.facility_unit_info.uri,
+        "site_code": self.facility_unit_info.site_code,
+        "site_name": self.facility_unit_info.site_name,
+        "facility_code": self.facility_unit_info.facility_code,
+        "facility_name": self.facility_unit_info.facility_name,
+        "sub_team_code": self.facility_unit_info.sub_team_code,
+        "sub_team_name": self.facility_unit_info.sub_team_name,
+        "sub_process_code": self.facility_unit_info.sub_process_code,
+        "sub_process_name": self.facility_unit_info.sub_process_name,
+        "sub_facility_group_code": self.facility_unit_info.sub_facility_group_code,
+        "sub_facility_group_name": self.facility_unit_info.sub_facility_group_name,
+        "facility_unit_code": facility_unit_code,
+        "facility_unit_name": facility_unit_name,
+        "facility_unit_type_code": self.facility_unit_info.facility_unit_type_code,
+        "facility_unit_type_name": self.facility_unit_info.facility_unit_type_name,
+        "reading_type_code": "",
+        "reading_type_name": "",
+        "unit_physics_list": unit_physics_list
+      }
+    }
+    var error = false;
+    if(parameters.unit_physics_list.length == 0) {
+      alert("물리량은 필수입력입니다.");
+    } else {
+      parameters.unit_physics_list.forEach(function(d) {
+        if(d.physics_type == "") {
+          error = true;
+        }
+      });
+      if(error) {
+        alert("물리량 타입(계측/수기/일반)은 필수입력입니다.");
+      }
+    }
+    if(parameters.facility_unit_name == "") {
+      alert("설비유닛이름은 필수입력입니다.");
+    } else {
+      console.log(parameters);
+      this._httpRequest("/api/assetmng/facility_unit", "PUT", parameters);
+    }
+  },
+  buildQuery: function(facility_info) {
+    var self = this;
+
+    var facility_unit_code = document.getElementById("facility_unit_code").value;
+    var facility_unit_name = document.getElementById("facility_unit_name").value;
+
+    var query = [{
+      "uri" : "",
+      "site_code": "",
+      "site_name": "",
+      "facility_code": facility_info.facility_code,
+      "facility_name": facility_info.facility_name,
+      "sub_team_code": facility_info.sub_team_code,
+      "sub_team_name": facility_info.sub_team_code,
+      "sub_process_code": facility_info.sub_process_code,
+      "sub_process_name": facility_info.sub_process_code,
+      "sub_facility_group_code": facility_info.sub_facility_group_code,
+      "sub_facility_group_name": facility_info.sub_facility_group_code,
+      "facility_unit_code": facility_unit_code,
+      "facility_unit_name": facility_unit_name,
+      "facility_unit_type_code": "",
+      "facility_unit_type_name": "",
+      "reading_type_code": "",
+      "reading_type_name" : "",
+      "unit_physics_list" : [{
+        "physics_code" : " ",
+        "physics_name" : "",
+        "physics_type": "",
+        "value": "",
+        "tag_id": ""
+      }]
+    }]
+
+    return query;
+  },
+  deckStateChanged: function(newState, oldState) {
+    var self = this;
+    if (newState.gridCommand == "setUnit") {
+      self.facility_info = [];
+      self.facility_unit_info = [];
+
+      var input_facility_unit_code = document.getElementById("facility_unit_code");
+      var input_facility_unit_name = document.getElementById("facility_unit_name");
+
+      self.facility_unit_info = newState.detail;
+
+      var facility_unit_code = self.facility_unit_info.facility_unit_code;
+      var facility_unit_name = self.facility_unit_info.facility_unit_name;
+
+      input_facility_unit_code.value = facility_unit_code;
+      input_facility_unit_name.value = facility_unit_name;
+
+      this.getFacilityUnitModifyGridData(facility_unit_code);
+    } else if (newState.gridCommand == "select_facility_unit_type") {
+      self.facility_info = [];
+      self.facility_unit_info = [];
+
+      var input_facility_unit_code = document.getElementById("facility_unit_code");
+      var input_facility_unit_name = document.getElementById("facility_unit_name");
+
+      input_facility_unit_code.value = "";
+      input_facility_unit_name.value = "";
+
+      var site_code = newState.site_code;
+      var facility_unit_type_code = newState.facility_unit_type_code;
+      var facility_info = newState.facility_info;
+      self.getFacilityUnitInsertGridData(site_code, facility_unit_type_code);
+      self.facility_info = facility_info;
+    }
+  },
+  behaviors: [px.card]
+});
+
+function createRadioButton(value, id) {
+    var radio = "<form><input type='radio' value='METERING' name='radio_button_" + id + "' disabled>계측<input type='radio' value='WRITING' name='radio_button_" + id + "' disabled>수기<input type='radio' value='STATIC' name='radio_button_" + id + "' disabled>일반</form>"
+    if (value == "METERING") {
+         radio = "<form><input type='radio' checked value='METERING' name='radio_button_" + id + "' disabled>계측<input type='radio' value='WRITING' name='radio_button_" + id + "' disabled>수기<input type='radio' value='STATIC' name='radio_button_" + id + "' disabled>일반</form>"
+
+    }
+    if (value == "WRITING") {
+        radio = "<form><input type='radio' value='METERING' name='radio_button_" + id + "' disabled>계측<input type='radio' value='WRITING' checked name='radio_button_" + id + "' disabled>수기<input type='radio' value='STATIC' name='radio_button_" + id + "' disabled>일반</form>"
+
+    }
+    if (value == "STATIC") {
+        radio = "<form><input type='radio' value='METERING' name='radio_button_" + id + "' disabled>계측<input type='radio' value='WRITING' name='radio_button_" + id + "' disabled>수기<input type='radio' checked value='STATIC' name='radio_button_" + id + "' disabled>일반</form>"
+    }
+    return radio;
+}
+
+function createInputField(field, id, value, type) {
+    var input;
+    if (value == null || value == "" || value == undefined || value == "null") {
+        value = "";
+    }
+    switch (field) {
+        case "value":
+            input = "<input style='color:black;' type='text' value='" + value + "' id='value_" + id + "'";
+            if (type == "WRITING") {
+                input = input + "/>";
+            } else {
+                input = input + " disabled />";
+            }
+            break;
+        case "tag_id":
+            input = "<input style='color:black;' type='text' value='" + value + "' id='tag_id_" + id + "'";
+            if (type == "METERING") {
+                input = input + "/>";
+            } else {
+                input = input + " disabled />";
+            }
+            break;
+    }
+    return input;
+}
+</script>

@@ -1,0 +1,175 @@
+<link rel="import" href="../polymer/polymer.html" />
+<link rel="import" href="../px-card/px-card.html" />
+<link rel="import" href="../px-data-table/px-data-table.html"/>
+
+<script src="../moment/min/moment.min.js"></script>
+
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap.css"/>
+<link rel="stylesheet" href="../bootstrap-3.3.2/dist/css/bootstrap-theme.css"/>
+
+<dom-module id="my-facility-bom-master-list-card">
+  <template>
+    <px-card header-text={{title}}>
+      <div class="row">
+      	<div class="row">
+      		<div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+              <span>
+      			<button class="btn btn-default" id="inquiry" on-click="inquiryButtonClick">설비 조회</button>
+      		  </span>
+      		</div>
+	      </div>
+			<div class="form-group">
+				<div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>사업장</label>
+				<select class="form-control" id="site"><option value="default">전체</option></select></div>
+				<div class="col-md-3"><label for="exampleInputName2">설비 코드</label>
+				<input type="text" class="form-control" id="facility_code"></div>
+				<div class="col-md-3"><label for="exampleInputName2">설비 그룹</label>
+				<select class="form-control" id="sub_facility_group" ><option value="">선택</option></select></div>
+				<div class="col-md-3"><label for="exampleInputName2">설비명</label>
+				<input class="form-control" type="text" id="facility_name"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="form-group" style="margin-top:15px">
+
+				<div class="col-md-3"><label for="exampleInputName2">조직</label>
+				<select class="form-control" id="sub_team"><option value="">선택</option></select></div>
+				<div class="col-md-3"><label for="exampleInputName2">공정</label>
+				<select class="form-control" id="sub_process"><option value="">선택</option></select></div>
+
+		  </div>
+	  </div>
+			<div class="row" style="margin-top:30px;">
+      		<px-data-table id="facilityMasterGrid" striped table-rows></px-data-table>
+			</div>
+     </div>
+    </px-card>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'my-facility-bom-master-list-card',
+      properties: {
+        identifyUri: {
+        type: String
+      }
+    },
+ 		init: function() {
+  	},
+    ready: function() {
+      var self = this;
+      var select_site = document.getElementById("site");
+      this.setSiteList(select_site, "site");
+      self.initSubList("default");
+
+      $('#site').change(function() {
+        var site_code = this.value;
+        var select_sub_team = document.getElementById("sub_team");
+        var select_sub_process = document.getElementById("sub_process");
+        var select_sub_facility_group = document.getElementById("sub_facility_group");
+        self.setSubList(site_code, "", select_sub_team, "sub_team");
+        self.setSubList(site_code, "", select_sub_process, "sub_process");
+        self.setSubList(site_code, "", select_sub_facility_group, "sub_facility_group");
+      });
+
+      this.getfacilityGrid('/facility/',"[]");
+    },
+  	initSubList: function(site_code) {
+  		var self = this;
+  		var select_sub_team = document.getElementById("sub_team");
+  		var select_sub_process = document.getElementById("sub_process");
+  		var select_sub_facility_group = document.getElementById("sub_facility_group");
+      this.setSubList(site_code, "", select_sub_team, "sub_team");
+      this.setSubList(site_code, "", select_sub_process, "sub_process");
+      this.setSubList(site_code, "", select_sub_facility_group, "sub_facility_group");
+  	},
+
+	inquiryButtonClick: function(){
+		var self = this;
+    var select_site = document.getElementById("site");
+		var select_sub_team = document.getElementById("sub_team");
+		var select_sub_facility_group = document.getElementById("sub_facility_group");
+		var select_sub_process = document.getElementById("sub_process");
+
+		var facility_code = document.getElementById("facility_code");
+		var facility_name = document.getElementById("facility_name");
+
+		var parameters = [];
+    parameters.push(select_site.value);
+		parameters.push(facility_code.value);
+		parameters.push(facility_name.value);
+		parameters.push(select_sub_team.value);
+		parameters.push(select_sub_facility_group.value);
+		parameters.push(select_sub_process.value);
+
+		var keys = [
+      "site_code",
+      "facility_code",
+      "facility_name",
+      "sub_team_code",
+      "sub_facility_group_code",
+      "sub_process_code"
+		];
+
+		data = this.makeParameter(parameters, keys);
+
+		self.getfacilityGrid('/facility/', JSON.stringify(data));
+
+  	},
+   getfacilityGrid: function(uri, parameter) {
+    var self = this;
+   		px.dealer.httpRequest({
+    			url: '/api/datagrid' + uri,
+    			method: 'POST',
+    			data:parameter
+   		 }).then(function(data){
+        // on fulfillment
+  				self.allData = data.tableData;
+  				var uiColumn = data.columns;
+  				var uiData = [];
+
+
+  		  		data.tableData.forEach(function(row){
+  			     var uiRow = {};
+
+  			     data.columns.forEach(function(col){
+  			        uiRow[col.label] = row[col.field]; //key:value
+  			     });
+
+  			     uiData.push(uiRow);
+        });
+        self.$.facilityMasterGrid.tableData = uiData;
+    	});
+      self.$.facilityMasterGrid.addEventListener("px-cell-click", function(e){
+
+        var clickedRow = e.detail.row;
+
+		  var upper_parameters = {
+          "facility_code": clickedRow.row.설비코드.value,
+          "facility_name": clickedRow.row.설비이름.value,
+          "sub_team_code": clickedRow.row.하위조직코드.value,
+          "sub_team_name": clickedRow.row.하위조직이름.value,
+          "sub_process_code": clickedRow.row.하위공정코드.value,
+          "sub_process_name": clickedRow.row.하위공정이름.value,
+          "sub_facility_group_code": clickedRow.row.하위설비그룹코드.value,
+          "sub_facility_group_name": clickedRow.row.하위설비그룹이름.value
+        }
+
+        var event = new Object();
+    		event.gridCommand = "setTree";
+    		event.parameters = clickedRow.row.설비코드.value;
+    		event.facilityInfo = upper_parameters;
+
+    		self.updateDeck(event);
+      });
+    },
+
+	deckStateChanged: function(newState, oldState) {
+		var self = this;
+	   self.showCard();
+    },
+
+
+	behaviors: [px.card]
+});
+</script>

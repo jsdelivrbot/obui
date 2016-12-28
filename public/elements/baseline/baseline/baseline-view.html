@@ -1,0 +1,56 @@
+<link rel="import" href="../../.././bower_components/polymer/polymer.html">
+<link rel="import" href="../../.././bower_components/px-card/px-deck.html">
+<link rel="import" href="./my-btn-card.html">
+<link rel="import" href="./my-inquiry-card.html">
+<link rel="import" href="./my-table-card.html">
+<link rel="import" href="./my-organization-card.html">
+<link rel="import" href="./my-team-card.html">
+<link rel="import" href="./my-process-card.html">
+<link rel="import" href="./my-sub-process-card.html">
+<link rel="import" href="./my-facility-group-card.html">
+<link rel="import" href="./my-sub-facility-group-card.html">
+<link rel="import" href="./my-location-card.html">
+<link rel="import" href="./my-flocation-card.html">
+<link rel="import" href="./my-sub-flocation-card.html">
+<link rel="import" href="./my-energy-source-card.html">
+<link rel="import" href="./my-energy-usage-card.html">
+<link rel="import" href="./my-emission-classify-card.html">
+<dom-module id="baseline-view">
+    <template>
+        <px-deck>
+            <my-btn-card id="button"></my-btn-card>
+            <my-inquiry-card id="inquiry" title="기준 정보"></my-inquiry-card>
+            <my-table-card id="table" title="사업장 정보"></my-table-card>
+            <my-organization-card id="table2" title="상위조직 정보"></my-organization-card>
+            <my-team-card id="table3" title="하위조직 정보"></my-team-card>
+            <my-process-card id="table4" title="상위공정 정보"></my-process-card>
+            <my-sub-process-card id="table5" title="하위공정 정보"></my-sub-process-card>
+            <my-facility-group-card id="table6" title="상위설비그룹 정보"></my-facility-group-card>
+            <my-sub-facility-group-card id="table7" title="하위설비그룹 정보"></my-sub-facility-group-card>
+            <my-location-card id="table8" title="위치구분 정보"></my-location-card>
+            <my-flocation-card id="table9" title="상위기능위치 정보"></my-flocation-card>
+            <my-sub-flocation-card id="table10" title="하위기능위치정보"></my-sub-flocation-card>
+            <my-energy-source-card id="table11" title="에너지원 정보"></my-energy-source-card>
+            <my-energy-usage-card id="table12" title="에너지이용 정보"></my-energy-usage-card>
+            <my-emission-classify-card id="table13" title="배출구분 정보"></my-emission-classify-card>
+        </px-deck>
+    </template>
+    <script>
+    Polymer({
+        is: 'baseline-view',
+        properties: {},
+        behaviors: [px.deck]
+    });
+    </script>
+</dom-module>
+GET /elements/bower_components/polymer/polymer.html HTTP/1.1
+Host: localhost:5000
+Connection: keep-alive
+Origin: http://localhost:5000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36
+Accept: */*
+Referer: http://localhost:5000/elements/baseline/meter/meter-view.html
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4
+Cookie: cookie_name=s%3Aj4yntpqbFrof-QGfZin-DRtTs8Uhd4v2.xtNbjRVs%2FAVySpvhjbZDH7QR%2FRwUV6RZ%2B2Pt1lKkG8A; _gat=1; _ga=GA1.1.1725551634.1482814692
+

@@ -1,0 +1,237 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html"/>
+<link rel="import" href="../../../bower_components/px-card/px-card.html"/>
+<link rel="import" href="../../../bower_components/px-data-table/px-data-table.html"/>
+<script src="../../../bower_components/moment/min/moment.min.js"></script>
+
+<dom-module id="my-team-card">
+<template>
+  <px-card header-text={{title}}>
+
+    <div class="row">
+      <div class="form-group">
+        <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>사업장이름</label>
+          <select class="form-control" id="sub_team_site"/><option value="default">선택</option></select>
+       </div>
+       <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>상위조직이름</label>
+          <select class="form-control" id="team"/><option value="default">선택</option></select>
+       </div>
+        <div class="col-md-3"><label for="exampleInputName2"><span style="color:red;">*</span>하위조직코드</label>
+          <input type="text" class="form-control" id="sub_team_code" disabled/>
+        </div>
+        <div class="col-md-3"><label for="exampleInputName2">하위조직이름</label>
+          <input type="text" class="form-control" id="sub_team_name"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-header-links layout layout--right" style="margin-top:30px;">
+      <div class="layout__item u-1/6">
+        <div class="card-header-links layout layout--right">
+          <px-data-table id="subTeamGrid" table-rows selectable></px-data-table>
+        </div>
+      </div>
+    </div>
+  </px-card>
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-team-card',
+	properties: {
+		classification: {
+			type: String,
+			value: "sub_team",
+			notify: true
+		},
+		allData: {
+			type: Object,
+			notify: true
+		},
+    arr_sub_team_code: {
+      type: Array,
+      notify: true
+    },
+    arr_columns: {
+      type: Array,
+      notify: true
+    }
+  },
+  init: function() {
+    this.hideCard();
+  },
+  ready: function() {
+    var self = this;
+    self.arr_sub_team_code = [];
+    this.$.subTeamGrid.addEventListener("px-row-click", function(e) {
+      var row_data;
+      var clickedRow = e.detail.row, selected = clickedRow._selected;
+      var select_team = document.getElementById("team");
+      if(!selected) {
+        var site_code = clickedRow.row.사업장코드.value;
+        var team_code =  clickedRow.row.상위조직코드.value;
+        var sub_team_code = clickedRow.row.하위조직코드.value;
+        var sub_team_name = clickedRow.row.하위조직이름.value;
+
+        	self.setUpperList(site_code, select_team, "team", team_code);
+
+        var input_sub_team_code = document.getElementById("sub_team_code");
+        var input_sub_team_name = document.getElementById("sub_team_name");
+
+        $("#sub_team_site").val(site_code).attr("selected", "selected");
+        $("#team").val(team_code).attr("selected", "selected");
+
+        input_sub_team_code.value = sub_team_code;
+        input_sub_team_name.value = sub_team_name;
+
+        self.arr_sub_team_code[clickedRow.row.dataIndex] = sub_team_code;
+        row_data = self.getDataFromSelectedRow(self.arr_columns, clickedRow.row);
+      }
+      else if(selected) {
+        var input_sub_team_code = document.getElementById("sub_team_code");
+        var input_sub_team_name = document.getElementById("sub_team_name");
+
+        $("#sub_team_site option:eq(0)").attr("selected", "selected");
+        $("#team option:eq(0)").attr("selected", "selected");
+
+        input_sub_team_code.value = null;
+        input_sub_team_name.value = null;
+		}
+      else {
+        row_data = null;
+        delete self.arr_sub_team_code[clickedRow.row.dataIndex];
+      }
+      self.row_data = row_data;
+    });
+
+		this.$.subTeamGrid.addEventListener("px-select-all-click", function(e){
+      self.arr_sub_team_code = [];
+			var allSelectedRows = e.detail;
+      if(allSelectedRows.length != 0) {
+        allSelectedRows.forEach(function(d) {
+          self.arr_sub_team_code[d.row.dataIndex] = d.row.하위조직코드.value;
+        });
+      } else {
+        self.arr_sub_team_code = [];
+      }
+		});
+  },
+  initAllInputForms: function() {
+
+    var self = this;
+
+    var select_site = document.getElementById("sub_team_site");
+    this.setSelectSiteList(select_site, "site");
+
+    $('#sub_team_site').change(function() {
+    	var site_code = this.value;
+
+    	var select_team = document.getElementById("team");
+    	self.setUpperList(site_code, select_team, "team");
+    });
+
+    var team_select_code = document.getElementById("team").value;
+    var input_sub_team_code = document.getElementById("sub_team_code");
+    var input_sub_team_name = document.getElementById("sub_team_name");
+
+    input_sub_team_code.value = "";
+    input_sub_team_name.value = "";
+  },
+  getGridData: function() {
+    var self = this;
+    px.dealer.httpRequest({
+      url: "api/datagrid/code",
+      method: 'POST',
+      data: [{"key": "classification", "value": self.classification}]
+    }).then(function(data) {
+      self.allData = data.tableData;
+      self.arr_columns = data.columns;
+      var uiColumn = data.columns;
+      var uiData = [];
+      var count = 1;
+      data.tableData.forEach(function(row) {
+        var uiRow = {
+          번호: count
+        };
+        data.columns.forEach(function(col) {
+          uiRow[col.label] = row[col.field]; //key:value
+        });
+        count++;
+        uiData.push(uiRow);
+      });
+      self.$.subTeamGrid.tableData = uiData;
+    });
+  },
+  add_newData: function() {
+    var self = this;
+    self.initAllInputForms();
+  },
+  updateData: function() {
+		var self = this;
+    var uri = (self.row_data == null ? "" : self.row_data.uri);
+    var classification = self.classification;
+    var site_code = document.getElementById("sub_team_site").value;
+    var team_code = document.getElementById("team").value;
+    var sub_team_code = document.getElementById("sub_team_code").value;
+    var sub_team_name = document.getElementById("sub_team_name").value;
+    if(sub_team_name == "") {
+      alert("하위조직이름은 필수 입력입니다.");
+    } else {
+
+      var parameters = {
+        "uri": uri,
+        "classification": classification,
+        "site_code": site_code,
+        "team_code": team_code,
+        "sub_team_code": sub_team_code,
+        "sub_team_name": sub_team_name
+      }
+			console.log(parameters);
+      this._httpRequest("/api/assetmng/" + self.classification, "PUT", parameters);
+  		// var event = new Object();
+  		// event.gridCommand = "inquiry";
+  		// event.parameters = [];
+  		// self.updateDeck(event);
+    }
+  },
+  deleteData: function() {
+		var self = this;
+		if(self.arr_sub_team_code == null || self.arr_sub_team_code.length == 0) {
+			alert ("삭제할 데이터를 선택하세요.");
+		} else {
+			var data = {
+				"delete_code_list": []
+			};
+			self.arr_sub_team_code.forEach(function(d) {
+				data.delete_code_list.push(d);
+			});
+			console.log(data);
+			// this._httpRequest("/api/assetmng/" + self.classification, "DELETE", data);
+		}
+  },
+  deckStateChanged: function(newState, oldState) {
+    var self = this;
+
+    if(this.isHiddenCard()) {
+      if(newState.clickedInfo == self.classification) {
+        this.showCard();
+        self.initAllInputForms();
+        self.getGridData();
+      }
+    } else {
+      if(newState.clickedInfo != self.classification) {
+        this.hideCard();
+      } else {
+        if(newState.command == 'new' + self.classification){
+          this.add_newData();
+        } else if(newState.command == 'update' + self.classification){
+          this.updateData();
+        } else if(newState.command == 'delete' + self.classification){
+          this.deleteData();
+        }
+      }
+    }
+  },
+  behaviors: [px.card]
+});
+</script>

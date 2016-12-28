@@ -1,0 +1,104 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../px-card/px-card.html"/>
+<link rel="import" href="../px-data-table/px-data-table.html"/>
+<link rel="import" href="../px-data-table/px-example-highlight.html"/>
+
+<script src="../moment/min/moment.min.js"></script>
+
+<dom-module id="my-master-grid-card">
+<template>
+<px-card header-text={{title}}>
+<div class="card-header-links layout layout--right">
+    <px-data-table id="masterGrid" striped selectable table-rows></px-data-table>
+</px-card>
+</template>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-master-grid-card',
+	properties: {
+    arr_facility_code: {
+      type: Array,
+      notify: true
+    },
+    arr_columns: {
+      type: Array,
+      notify: true
+    }
+  },
+
+	ready: function() {
+		var self = this;
+    self.arr_facility_code = [];
+
+    this.getGridData('/facility/', "[]");
+		this.$.masterGrid.addEventListener("px-row-click", function(e){
+			var clickedRow = e.detail.row, selected = clickedRow._selected;
+      var row_data;
+      if(!selected) {
+        self.arr_facility_code[clickedRow.row.dataIndex] = clickedRow.row.설비코드.value;
+        row_data = self.getDataFromSelectedRow(self.arr_columns, clickedRow.row);
+      } else {
+        row_data = null;
+        delete self.arr_facility_code[clickedRow.row.dataIndex];
+      }
+  		var event = new Object();
+  		event.gridCommand = "select_row";
+      event.arr_facility_code = self.arr_facility_code;
+      event.row_data = row_data;
+  		self.updateDeck(event);
+		});
+		this.$.masterGrid.addEventListener("px-select-all-click", function(e){
+      self.arr_facility_code = [];
+			var allSelectedRows = e.detail;
+      if(allSelectedRows.length != 0) {
+        allSelectedRows.forEach(function(d) {
+          self.arr_facility_code[d.row.dataIndex] = d.row.설비코드.value;
+        });
+      } else {
+        self.arr_facility_code = [];
+      }
+  		var event = new Object();
+  		event.gridCommand = "select_all_rows";
+      event.arr_facility_code = self.arr_facility_code;
+  		self.updateDeck(event);
+		});
+	},
+	getGridData: function(uri, parameter) {
+		var self = this;
+    px.dealer.httpRequest({
+      url: '/api/datagrid' + uri,
+      method: 'POST',
+      data: parameter
+    }).then(function(data){
+        // on fulfillment
+  			self.allData = data.tableData;
+        self.arr_columns = data.columns;
+  			var uiColumn = data.columns;
+  			var uiData = [];
+
+  		  data.tableData.forEach(function(row){
+  			     var uiRow = {};
+  			     data.columns.forEach(function(col){
+  			        uiRow[col.label] = row[col.field]; //key:value
+  			     });
+  			     uiData.push(uiRow);
+        });
+        self.$.masterGrid.tableData = uiData;
+    });
+  },
+
+  deckStateChanged: function(newState, oldState) {
+    var self = this;
+    if(newState.gridCommand != null){
+			if(newState.gridCommand == "inquiry"){
+        var parameter = JSON.stringify(newState.parameters);
+        this.getGridData('/facility/', parameter);
+      }
+    }
+  },
+
+  behaviors: [px.card]
+});
+</script>

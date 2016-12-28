@@ -1,0 +1,624 @@
+<link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../px-card/px-card.html"/>
+<link rel="import" href="../px-dropdown/px-dropdown.html"/>
+<link rel="import" href="../px-calendar-picker/px-calendar-picker.html"/>
+<link rel="import" href="../px-datetime-picker/px-datetime-picker.html"/>
+<script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+<script src="../moment/min/moment.min.js"></script>
+
+<dom-module id="my-master-info-card">
+	<template>
+		<px-card header-text={{title}}>
+
+<div class="card-header-link layout layout--right">
+   <div class="layout__item u-1/6">
+		<div class="row">
+    			<div class="row">
+      			<div class="form-group" style="margin-top:15px; text-align:right; padding-right:32px;">
+       				<span>
+          				<button class="btn btn-default" id="inquiry" on-click="inquiryButtonClick">조회</button>
+          				<button class="btn btn-default" id="newSubmit" on-click="add_newData">추가</button>
+          				<button class="btn btn-default" id="newCode" on-click="updateData">저장</button>
+          				<button class="btn btn-default" id="deleteInform" on-click="deleteData">삭제</button>
+        				</span>
+      			</div>
+      		</div>
+
+      	<div class="form-group">
+        		<div class="col-md-2"><label for="exampleInputName2"><span style="color:red;">*</span>사업장</label>
+          		<select class="form-control" id="site"><option value="default">전체</option></select>
+        		</div>
+        		<div class="col-md-2"><label for="exampleInputName2">설비 코드</label>
+          		<input type="text" class="form-control" id="facility_code" disabled="true">
+        		</div>
+        		<div class="col-md-2"><label for="exampleInputName2">설비 내역</label>
+          		<input type="text" class="form-control" id="facility_name">
+        		</div>
+        		<div class="col-md-2"><label for="exampleInputName2">설비 용량</label>
+          		<input type="text" class="form-control" id="facility_capacity" disabled="true" value="{{dynamicCode}}">
+        		</div>
+        		<div class="col-md-2"><label for="exampleInputName2">설비 적용 일자</label>
+          	<div>
+            	<px-datetime-picker id="facility_registered_on" date-time="2016-09-02T00:00:00.000Z" date-format="YYYY/MM/DD" time-format="hh:mmA" hide-time="true" show-time-zone="none" time-zone="Asia/Seoul"></px-datetime-picker>
+          	</div>
+        		</div>
+       	</div>
+    	</div>
+    	<div class="row">
+      <div class="form-group" style="margin-top:15px">
+        <div class="col-md-2"><label for="exampleInputName2">조직</label>
+          <select class="form-control" id="team"><option value="default">선택</option></select>
+        </div>
+        <div class="col-md-2"><label for="exampleInputName2">공정</label>
+          <select class="form-control" id="process"><option value="default">선택</option></select>
+        </div>
+        <div class="col-md-2"><label for="exampleInputName2">설비 그룹</label>
+          <select class="form-control" id="facility_group"><option value="default">선택</option></select>
+        </div>
+        <div class="col-md-2"><label for="exampleInputName2">위치</label>
+          <select class="form-control" id="location"><option value="default">선택</option></select>
+        </div>
+        <div class="col-md-2"><label for="exampleInputName2">기능 위치</label>
+          <select class="form-control" id="functional_location"><option value="default">선택</option></select>
+        </div>
+        <div class="col-md-2"><label for="exampleInputName2">에너지원</label>
+          <form id="energy_source_check" style="display: inline-block;" tabindex="0" on-blur="lose_focus" disabled="true">
+            <div>
+              <div class="selectBox" on-click="showCheckboxes">
+                <select class="form-control"  id="dummyselect" disabled="true">
+                  <option id="dummyOption">{{optionString}}</option>
+                </select>
+                <div class="overSelect"></div>
+              </div>
+              <div id="energy_source">
+                <label for="aaa"><input id ="aaa" type="checkbox"></label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <div class="col-md-2"><font color="white">조직</font>
+          <select class="form-control" id="sub_team"><option value="default">선택</option></select>
+        </div>
+          <div class="col-md-2"><label for="exampleInputName2"><font color="white">공정</font></label>
+            <select class="form-control" id="sub_process"><option value="default">선택</option></select>
+          </div>
+          <div class="col-md-2"><label for="exampleInputName2"><font color="white">설비 그룹</font></label>
+            <select class="form-control" id="sub_facility_group"><option value="default">선택</option></select>
+          </div>
+          <div class="col-md-2"><label for="exampleInputName2"><font color="white">위치</font></label></div>
+          <div class="col-md-2"><label for="exampleInputName2"><font color="white">기능 위치</font></label>
+            <select class="form-control" id="sub_functional_location"><option value="default">선택</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+ </div>
+
+</px-card>
+</template>
+<style>
+.multiselect {
+	width: 200px;
+	float:left;
+}
+.selectBox {
+	position: relative;
+}
+.selectBox select {
+	width: 100%;
+}
+.overSelect {
+	position: absolute;
+	left: 0; right: 0; top: 0; bottom: 0;
+}
+#energy_source {
+	position:absolute;
+	display: none;
+	width:200px;
+	border: 1px #dadada solid;
+	background-color: #fff;
+	float:left;
+}
+#energy_source label {
+	display: block;
+}
+#energy_source label:hover {
+	background-color: #1e90ff;
+}
+</style>
+</dom-module>
+
+<script>
+Polymer({
+	is: 'my-master-info-card',
+	properties: {
+		identifyUri: {
+			type: String
+		},
+		arr_energy_source_code: {
+			type: Array,
+			notify: true
+		},
+    arr_energy_source_name: {
+      type: Array,
+      notify: true
+    },
+    arr_facility_code: {
+      type: Array,
+      notify: true
+    },
+		expanded:{
+			type: Boolean,
+			value: false
+		},
+		optionString:{
+			type:String,
+			value: "에너지원을 선택해 주세요"
+		},
+    row_data: {
+      type: Object,
+      value: null
+    }
+	},
+    // initialization
+	ready: function() {
+    var self = this;
+    self.arr_facility_code = [];
+
+    var select_site = document.getElementById("site");
+    this.setSiteList(select_site, "site");
+    self.initUpperList("default");
+
+    $('#site').change(function() {
+      var site_code = this.value;
+      self.initUpperList(site_code);
+    });
+    $('#team').change(function() {
+      var site_code = document.getElementById("site").value;
+      var team_code = this.value;
+	    var select_sub_team = document.getElementById("sub_team");
+      self.setSubList(site_code, team_code, select_sub_team, "sub_team");
+    });
+    $('#process').change(function() {
+      var site_code = document.getElementById("site").value;
+      var process_code = this.value;
+	    var select_sub_process = document.getElementById("sub_process");
+      self.setSubList(site_code, process_code, select_sub_process, "sub_process");
+    });
+    $('#facility_group').change(function() {
+      var site_code = document.getElementById("site").value;
+      var facility_group_code = this.value;
+	    var select_sub_facility_group = document.getElementById("sub_facility_group");
+      self.setSubList(site_code, facility_group_code, select_sub_facility_group, "sub_facility_group");
+    });
+    $('#functional_location').change(function() {
+      var site_code = document.getElementById("site").value;
+      var functional_location_code = this.value;
+	    var select_sub_functional_location = document.getElementById("sub_functional_location");
+      self.setSubList(site_code, functional_location_code, select_sub_functional_location, "sub_functional_location");
+    });
+	},
+	initUpperList: function(site_code) {
+
+		var self = this;
+
+    var select_team = document.getElementById("team");
+		var select_process = document.getElementById("process");
+		var select_facility_group = document.getElementById("facility_group");
+		var select_location = document.getElementById("location");
+		var select_functional_location = document.getElementById("functional_location");
+    var select_energy_source = document.getElementById("energy_source");
+
+    this.setUpperList(site_code, select_team, "team");
+    this.setUpperList(site_code, select_process, "process");
+    this.setUpperList(site_code, select_facility_group, "facility_group");
+    this.setUpperList(site_code, select_location, "location");
+    this.setUpperList(site_code, select_functional_location, "functional_location");
+    self.setDataToCheckBox("api/list/" + (site_code == "default" ? "*" : site_code) + "/energy_source", select_energy_source);
+	},
+  initAllInputForms: function() {
+    var self = this;
+
+    var input_facility_code = document.getElementById("facility_code");
+    input_facility_code.value = "";
+    var input_facility_name = document.getElementById("facility_name");
+    input_facility_name.value = "";
+		var enableCapacity = document.getElementById("facility_capacity");
+    enableCapacity.value = "";
+		enableCapacity.disabled = false;
+
+    checkCnt = 0;
+    self.arr_energy_source_code = [];
+    self.arr_energy_source_name = [];
+		var enableEnergySource = document.getElementById("dummyselect");
+		enableEnergySource.disabled = false;
+    $("input[name=energy_source]:checkbox").each(function() {
+      $(this).attr("checked", false);
+    });
+    var defaultMsg = "에너지원을 선택해 주세요";
+    var checkedItemName = defaultMsg;
+    var textNode = document.createTextNode(checkedItemName);
+    document.getElementById("dummyOption").removeChild(document.getElementById("dummyOption").childNodes[0]);
+    document.getElementById("dummyOption").appendChild(textNode);
+  },
+
+	add_newData: function(){
+    var self = this;
+    self.row_data = null;
+    var select_site = document.getElementById("site");
+    this.setSiteList(select_site, "site");
+    self.initUpperList("default");
+		this.initList(document.getElementById("sub_team"));
+		this.initList(document.getElementById("sub_process"));
+		this.initList(document.getElementById("sub_facility_group"));
+		this.initList(document.getElementById("sub_functional_location"));
+    self.initAllInputForms();
+	},
+	deleteData: function(){
+	 	var self = this;
+    if(self.arr_facility_code == null || self.arr_facility_code.length == 0) {
+      alert ("삭제할 데이터를 선택하세요.");
+    } else {
+      var data = {
+        "delete_code_list": []
+      };
+      self.arr_facility_code.forEach(function(d) {
+        data.delete_code_list.push(d);
+      });
+
+      this._httpRequest('/api/assetmng/facility', "DELETE", data);
+    }
+	},
+	updateData: function(){
+
+		var self = this;
+    var uri = (self.row_data == null ? "" : self.row_data.uri);
+		var site_code = document.getElementById("site").value;
+    if(this.convertDefaultToNull(site_code) == "") {
+      alert("사업장은 필수 입력입니다.");
+    } else {
+      var site_name = $("#site option:selected").text();
+      var facility_code = document.getElementById("facility_code").value;
+      var facility_name = document.getElementById("facility_name").value;
+      var facility_capacity = document.getElementById("facility_capacity").value;
+      (facility_capacity == "" ? facility_capacity = Number("0") : facility_capacity = Number(facility_capacity));
+
+  		var apply_date = document.getElementById("facility_registered_on").dateTime;
+  		var today = new Date(apply_date).toISOString().substring(0, 10);
+      var facility_registered_on = today.replace(/-/g, "/");
+
+  		var team_code = this.convertDefaultToNull(document.getElementById("team").value);
+  		var team_name = this.convertDefaultToNull($("#team option:selected").text());
+  		var sub_team_code = this.convertDefaultToNull(document.getElementById("sub_team").value);
+  		var sub_team_name = this.convertDefaultToNull($("#sub_team option:selected").text());
+  		var process_code = this.convertDefaultToNull(document.getElementById("process").value);
+  		var process_name = this.convertDefaultToNull($("#process option:selected").text());
+  		var sub_process_code = this.convertDefaultToNull(document.getElementById("sub_process").value);
+  		var sub_process_name = this.convertDefaultToNull($("#sub_process option:selected").text());
+  		var facility_group_code = this.convertDefaultToNull(document.getElementById("facility_group").value);
+  		var facility_group_name = this.convertDefaultToNull($("#facility_group option:selected").text());
+  		var sub_facility_group_code = this.convertDefaultToNull(document.getElementById("sub_facility_group").value);
+  		var sub_facility_group_name = this.convertDefaultToNull($("#sub_facility_group option:selected").text());
+  		var location_code = this.convertDefaultToNull(document.getElementById("location").value);
+  		var location_name = this.convertDefaultToNull($("#location option:selected").text());
+  		var functional_location_code = this.convertDefaultToNull(document.getElementById("functional_location").value);
+  		var functional_location_name = this.convertDefaultToNull($("#functional_location option:selected").text());
+  		var sub_functional_location_code = this.convertDefaultToNull(document.getElementById("sub_functional_location").value);
+  		var sub_functional_location_name = this.convertDefaultToNull($("#sub_functional_location option:selected").text());
+      var energy_source_code1 = this.convertDefaultToNull(self.arr_energy_source_code[0]);
+      var energy_source_name1 = this.convertDefaultToNull(self.arr_energy_source_name[0]);
+      var energy_source_code2 = this.convertDefaultToNull(self.arr_energy_source_code[1]);
+      var energy_source_name2 = this.convertDefaultToNull(self.arr_energy_source_name[1]);
+      var energy_source_code3 = this.convertDefaultToNull(self.arr_energy_source_code[2]);
+      var energy_source_name3 = this.convertDefaultToNull(self.arr_energy_source_name[2]);
+
+      var parameters = {
+        "uri": uri,
+        "site_code": site_code,
+        "site_name": site_name,
+        "facility_code": facility_code,
+        "facility_name": facility_name,
+        "facility_capacity": facility_capacity,
+        "facility_registered_on": facility_registered_on,
+        "team_code": team_code,
+        "team_name": team_name,
+        "sub_team_code": sub_team_code,
+        "sub_team_name": sub_team_name,
+        "process_code": process_code,
+        "process_name": process_name,
+        "sub_process_code": sub_process_code,
+        "sub_process_name": sub_process_name,
+        "facility_group_code": facility_group_code,
+        "facility_group_name": facility_group_name,
+        "sub_facility_group_code": sub_facility_group_code,
+        "sub_facility_group_name": sub_facility_group_name,
+        "location_code": location_code,
+        "location_name": location_name,
+        "functional_location_code": functional_location_code,
+        "functional_location_name": functional_location_name,
+        "sub_functional_location_code": sub_functional_location_code,
+        "sub_functional_location_name": sub_functional_location_name,
+        "energy_source_code1": energy_source_code1,
+        "energy_source_name1": energy_source_name1,
+        "energy_source_code2": energy_source_code2,
+        "energy_source_name2": energy_source_name2,
+        "energy_source_code3": energy_source_code3,
+        "energy_source_name3": energy_source_name3
+      }
+
+      this._httpRequest('/api/assetmng/facility', "PUT", parameters);
+  		// var event = new Object();
+  		// event.gridCommand = "inquiry";
+  		// event.parameters = [];
+  		// self.updateDeck(event);
+    }
+	},
+
+	inquiryButtonClick: function(){
+
+		var keys = [
+			"site_code",
+      "facility_code",
+      "facility_name",
+      "facility_registered_on",
+			"team_code",
+			"sub_team_code",
+      "process_code",
+      "sub_process_code",
+      "facility_group_code",
+      "sub_facility_group_code",
+      "location_code",
+      "functional_location_code",
+      "sub_functional_location_code"
+		];
+
+		var self = this;
+		var site_code = document.getElementById("site").value;
+    var facility_code = document.getElementById("facility_code").value;
+    var facility_name = document.getElementById("facility_name").value;
+
+		var apply_date = document.getElementById("facility_registered_on");
+		var today = new Date(apply_date.dateTime);
+    var year = today.toISOString().substring(0, 4);
+    var month = today.toISOString().substring(5, 7);
+    var day = today.toISOString().substring(8, 10);
+    var facility_registered_on = year + "/" + month + "/" + day;
+
+		var team_code = document.getElementById("team").value;
+		var sub_team_code = document.getElementById("sub_team").value;
+		var process_code = document.getElementById("process").value;
+		var sub_process_code = document.getElementById("sub_process").value;
+		var facility_group_code = document.getElementById("facility_group").value;
+		var sub_facility_group_code = document.getElementById("sub_facility_group").value;
+		var location_code = document.getElementById("location").value;
+		var functional_location_code = document.getElementById("functional_location").value;
+		var sub_functional_location_code = document.getElementById("sub_functional_location").value;
+
+		var parameters = [];
+    parameters.push(site_code);
+    parameters.push(facility_code);
+    parameters.push(facility_name);
+    parameters.push(facility_registered_on);
+    parameters.push(team_code);
+    parameters.push(sub_team_code);
+    parameters.push(process_code);
+    parameters.push(sub_process_code);
+    parameters.push(facility_group_code);
+    parameters.push(sub_facility_group_code);
+    parameters.push(location_code);
+    parameters.push(functional_location_code);
+    parameters.push(sub_functional_location_code);
+
+		var data = this.makeParameter(parameters, keys);
+
+		var event = new Object();
+		event.gridCommand = "inquiry";
+		event.parameters = data;
+		self.updateDeck(event);
+	},
+
+	showCheckboxes:function(){
+		var checkbox = document.getElementById("energy_source");
+		var disableEnergySource = document.getElementById("dummyselect");
+
+		if(disableEnergySource.disabled == true) {
+			checkbox.style.display = "none";
+			this.expanded = false;
+		} else {
+				if(!this.expanded){
+						checkbox.style.display = "block";
+						this.expanded = true;
+				}else{
+					checkbox.style.display = "none";
+					this.expanded = false;
+			}
+		}
+	},
+	setDataToCheckBox: function(url, container, arr_default_value){
+    var self = this;
+		var dataArray = [];
+		while(container.hasChildNodes()){
+			this.unlisten(container.firstChild, "tab", "countCheckboxes");
+			container.removeChild(container.firstChild);
+		}
+		this.getData(url).then(function(data){
+			for(i=0; i<data.length; i++){
+				dataArray.push(data[i]);
+			}
+			for(index in dataArray){
+				var checkElement = document.createElement("input");
+				checkElement.type = "checkbox";
+				checkElement.name="energy_source";
+				checkElement.id = dataArray[index].energy_source_code;
+				checkElement.value = dataArray[index].energy_source_code;
+				checkElement.setAttribute("class","style-scope my-master-info-card");
+
+				var label = document.createElement("label");
+				label.htmlFor = dataArray[index].energy_source_code;
+				label.style.display = "block";
+				label.setAttribute("class","style-scope my-master-info-card");
+				label.appendChild(checkElement);
+				label.appendChild(document.createTextNode(dataArray[index].energy_source_name));
+				container.appendChild(label);
+
+				checkElement.onclick = function(e){
+					var checked = e.srcElement.checked;
+					var checkedItemName = null;
+					var defaultMsg = "에너지원을 선택해 주세요";
+					if(checked){
+						if(checkCnt < 3){
+							checkCnt = checkCnt+1;
+						}else{
+							e.srcElement.checked = false;
+						}
+					}else{
+						checkCnt = checkCnt - 1;
+					}
+					var checkedItems = get_checked_energy_name(document.getElementById("energy_source_check"));
+					for(index in checkedItems){
+            self.arr_energy_source_code[index] = (checkedItems[index].id);
+            self.arr_energy_source_name[index] = (checkedItems[index].nextSibling.textContent);
+						if(checkedItemName == null){
+							checkedItemName = checkedItems[index].nextSibling.textContent;
+
+						}else{
+							checkedItemName = checkedItemName+', ' + checkedItems[index].nextSibling.textContent;
+						}
+					}
+					if(checkedItemName == null){
+						checkedItemName = defaultMsg;
+					}
+
+					var textNode = document.createTextNode(checkedItemName);
+					document.getElementById("dummyOption").removeChild(document.getElementById("dummyOption").childNodes[0]);
+					document.getElementById("dummyOption").appendChild(textNode);
+				};
+				checkElement.onfocus = function(e){
+					var form = document.getElementById("energy_source_check");
+					form.focus();
+				};
+			}
+      if(typeof arr_default_value != "undefined") {
+        arr_default_value.forEach(function(d, i) {
+          $('#' + d).attr("checked", true);
+					var textNode = document.createTextNode(self.arr_energy_source_name[i]);
+					document.getElementById("dummyOption").removeChild(document.getElementById("dummyOption").childNodes[0]);
+					document.getElementById("dummyOption").appendChild(textNode);
+        });
+      }
+		});
+	},
+	lose_focus: function(event){
+		var checkbox = document.getElementById("energy_source");
+		if(event.relatedTarget == null){
+			if(this.expanded){
+				checkbox.style.display = "none";
+				this.expanded = false;
+			}
+			return;
+		}else if(event.relatedTarget.name != "energy_source"){
+			if(this.expanded){
+				checkbox.style.display = "none";
+				this.expanded = false;
+			}
+			return;
+		}
+	},
+  setInputForms: function(row_data) {
+    var self = this;
+
+    var select_site = document.getElementById("site");
+    var input_facility_code = document.getElementById("facility_code");
+    var input_facility_name = document.getElementById("facility_name");
+    var input_facility_capacity = document.getElementById("facility_capacity");
+    var facility_registered_on = document.getElementById("facility_registered_on");
+    var select_team = document.getElementById("team");
+    var select_sub_team = document.getElementById("sub_team");
+    var select_process = document.getElementById("process");
+    var select_sub_process = document.getElementById("sub_process");
+    var select_facility_group = document.getElementById("facility_group");
+    var select_sub_facility_group = document.getElementById("sub_facility_group");
+    var select_location = document.getElementById("location");
+    var select_functional_location = document.getElementById("functional_location");
+    var select_sub_functional_location = document.getElementById("sub_functional_location");
+    var select_energy_source = document.getElementById("energy_source");
+
+    self.initAllInputForms();
+
+    select_site.value = row_data.site_code;
+    input_facility_code.value = row_data.facility_code;
+    input_facility_name.value = row_data.facility_name;
+    input_facility_capacity.value = row_data.facility_capacity;
+    facility_registered_on.dateTime = new Date(row_data.facility_registered_on).toISOString();
+
+    this.setUpperList(row_data.site_code, select_team, "team", row_data.team_code);
+    this.setUpperList(row_data.site_code, select_process, "process", row_data.process_code);
+    this.setUpperList(row_data.site_code, select_facility_group, "facility_group", row_data.facility_group_code);
+    this.setUpperList(row_data.site_code, select_location, "location", row_data.location_code);
+    this.setUpperList(row_data.site_code, select_functional_location, "functional_location", row_data.functional_location_code);
+
+    this.setSubList(row_data.site_code, row_data.team_code, select_sub_team, "sub_team", row_data.sub_team_code);
+    this.setSubList(row_data.site_code, row_data.process_code, select_sub_process, "sub_process", row_data.sub_process_code);
+    this.setSubList(row_data.site_code, row_data.facility_group_code, select_sub_facility_group, "sub_facility_group", row_data.sub_facility_group_code);
+    this.setSubList(row_data.site_code, row_data.functional_location_code, select_sub_functional_location, "sub_functional_location", row_data.sub_functional_location_code);
+
+    checkCnt = 0;
+    self.arr_energy_source_code = [];
+    self.arr_energy_source_name = [];
+    if(row_data.energy_source_code1 != null && row_data.energy_source_code1 != "") {
+      self.arr_energy_source_code[checkCnt] = row_data.energy_source_code1;
+      self.arr_energy_source_name[checkCnt++] = row_data.energy_source_name1;
+    }
+    if(row_data.energy_source_code2 != null && row_data.energy_source_code2 != "") {
+      self.arr_energy_source_code[checkCnt] = row_data.energy_source_code2;
+      self.arr_energy_source_name[checkCnt++] = row_data.energy_source_name2;
+    }
+    if(row_data.energy_source_code3 != null && row_data.energy_source_code3 != "") {
+      self.arr_energy_source_code[checkCnt] = row_data.energy_source_code3;
+      self.arr_energy_source_name[checkCnt++] = row_data.energy_source_name3;
+    }
+    self.setDataToCheckBox("api/list/" + row_data.site_code + "/energy_source", select_energy_source, self.arr_energy_source_code);
+  },
+	deckStateChanged: function(newState, oldState) {
+		var self = this;
+    if(newState.gridCommand == "select_row" || newState.gridCommand == "select_all_rows") {
+      self.arr_facility_code = [];
+      newState.arr_facility_code.forEach(function(d) {
+        self.arr_facility_code.push(d);
+      });
+      if(newState.gridCommand == "select_row") {
+        self.row_data = newState.row_data;
+        if(newState.row_data != null) {
+          self.setInputForms(self.row_data);
+        }
+      }
+    }
+	},
+	behaviors: [px.card]
+});
+</script>
+<script>
+var checkCnt = 0;
+function get_checked_energy(energy_source){
+	var checked_energy = [];
+	for(var i = 0; i < energy_source.length; i++){
+		if(energy_source.elements[i].checked){
+			checked_energy.push(energy_source.elements[i].id);
+		}
+	}
+	return checked_energy;
+}
+function get_checked_energy_name(energy_source){
+	var checked_energy = [];
+	for(var i = 0; i < energy_source.length; i++){
+		if(energy_source.elements[i].checked){
+			checked_energy.push(energy_source.elements[i]);
+		}
+	}
+	return checked_energy;
+}
+</script>
